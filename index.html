@@ -1,10 +1,33 @@
-<!-- Version: V1.0 -->
+<!-- Version: V1.1 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Wing — wing.cx</title>
+  <meta name="description" content="Daniel Wing turns raw user complaints into clean data, and clean data into AI that actually solves the problem. AI & analytics for customer experience." />
+  <link rel="canonical" href="https://wing.cx/" />
+  <meta name="theme-color" content="#3681ab" />
+
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="wing.cx" />
+  <meta property="og:url" content="https://wing.cx/" />
+  <meta property="og:title" content="Daniel Wing — AI & Analytics for Customer Experience" />
+  <meta property="og:description" content="Daniel Wing turns raw user complaints into clean data, and clean data into AI that actually solves the problem. AI & analytics for customer experience." />
+  <meta property="og:image" content="https://wing.cx/og-image.jpg" />
+  <meta property="og:image:type" content="image/jpeg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Daniel Wing — AI & Analytics for Customer Experience" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Daniel Wing — AI & Analytics for Customer Experience" />
+  <meta name="twitter:description" content="Daniel Wing turns raw user complaints into clean data, and clean data into AI that actually solves the problem. AI & analytics for customer experience." />
+  <meta name="twitter:image" content="https://wing.cx/og-image.jpg" />
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -319,12 +342,19 @@
       .hero-container {
         padding: 0 1.5rem 3rem 1.5rem;
       }
+      /* Size the portrait slot to its content so the empty
+         placeholder doesn't reserve blank space and push the
+         hero copy and CTAs below the fold. */
       .subject-wrapper {
         position: relative;
         top: auto;
         left: auto;
         transform: none;
-        height: 380px;
+        height: auto;
+        max-height: none;
+      }
+      .subject-img {
+        max-height: 380px;
         margin-bottom: 1.5rem;
       }
     }
