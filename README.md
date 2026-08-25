@@ -95,6 +95,17 @@ Never default the picker to the browser's locale. An English-locale browser is
 no evidence the recording is English, and getting it wrong fails silently. The
 detected language is always shown next to the result for that reason.
 
+#### Desktop version
+
+Long recordings are limited by browser memory, since the whole decoded audio is
+held as a Float32Array. For those, `/ships/transcribe` links to a downloadable
+desktop build, which lives in its own repository at
+[daniel-wing/transcribe](https://github.com/daniel-wing/transcribe). It uses
+faster-whisper rather than transformers.js, so it is far quicker and has no
+length limit. The download links point at that repository's latest release; if
+the asset filenames there ever change, update them in
+`ships/transcribe/index.html`.
+
 #### Speed
 
 Wall-clock time as a multiple of audio length, measured on an M-series Mac
