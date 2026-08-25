@@ -134,16 +134,14 @@ function updateEstimate() {
   const low = state.duration * ratio;
   const high = low * 2;
 
-  let span;
   if (high < 60) {
-    span = 'under a minute';
-  } else {
-    const lowMin = Math.max(1, Math.round(low / 60));
-    const highMin = Math.max(lowMin + 1, Math.round(high / 60));
-    span = `${lowMin}–${highMin} min`;
+    el.estimate.textContent = 'Should take under a minute.';
+    return;
   }
 
-  el.estimate.textContent = `Roughly ${span}, depending on your computer.`;
+  const lowMin = Math.max(1, Math.round(low / 60));
+  const highMin = Math.max(lowMin + 1, Math.round(high / 60));
+  el.estimate.textContent = `Roughly ${lowMin}–${highMin} min, depending on your computer.`;
 }
 
 /** Preselect the browser's own language when Whisper supports it. */
