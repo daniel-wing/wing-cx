@@ -316,21 +316,6 @@ a { color: inherit; }
 
 .site-footer a:hover { color: #ffffff; }
 
-/* Contact lives at the bottom of the page rather than in the header, so the
-   header stays down to brand + nav + language and fits any translation. */
-.footer-actions {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.btn-sm {
-  padding: 0.5rem 1rem;
-  font-size: 0.82rem;
-}
-
-.btn-sm svg { width: 14px; height: 14px; }
 
 @media (max-width: 900px) {
   .site-header { padding: 1.25rem 1rem; gap: 0.5rem; }
@@ -362,9 +347,6 @@ a { color: inherit; }
   .nav-item svg { width: 16px; height: 16px; }
 
   .lang-opt { padding: 0.3rem 0.55rem; font-size: 0.72rem; }
-
-  /* Contact buttons wrap under the CTA rather than squeezing onto one line. */
-  .footer-actions { margin-left: 0; }
 }
 
 /* ---------- Cards ----------
