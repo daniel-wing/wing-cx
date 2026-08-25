@@ -22,6 +22,8 @@ const el = {
   progressNote: $('progress-note'),
   estimate: $('estimate'),
   errorBox: $('error-box'),
+  advice: $('advice-box'),
+  mobileNote: $('mobile-note'),
   outputPanel: $('output-panel'),
   doneNote: $('done-note'),
   langCheck: $('lang-check'),
@@ -62,6 +64,7 @@ const SPEED = {
 
 const state = {
   file: null,
+  isMobile: false,
   device: 'wasm',
   duration: null,
   detected: null,
@@ -74,6 +77,66 @@ const state = {
 };
 
 let worker = null;
+
+/* ---------------- device and memory headroom ---------------- */
+
+/**
+ * Decoding costs about 64 KB per second of audio per channel. At peak we are
+ * briefly holding the source file, the decoded AudioBuffer (assume stereo) and
+ * our mono copy at once, which is what actually kills a tab on a phone.
+ */
+const BYTES_PER_AUDIO_SECOND = 16000 * 4;
+
+function isMobileDevice() {
+  const uaData = navigator.userAgentData;
+  if (typeof uaData?.mobile === 'boolean') return uaData.mobile;
+  // iPadOS claims to be a Mac, so touch points are the giveaway.
+  if (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) return true;
+  if (/Android|iPhone|iPad|iPod|Mobile|Silk/i.test(navigator.userAgent)) return true;
+  return window.matchMedia('(pointer: coarse)').matches && window.screen.width < 1024;
+}
+
+/** How much working memory this device can plausibly give one tab. */
+function memoryBudgetBytes() {
+  const MB = 1024 * 1024;
+  // Phones are the tight case: iOS in particular kills the tab rather than
+  // throwing something we could catch and report.
+  if (state.isMobile) return 350 * MB;
+  const gb = navigator.deviceMemory;
+  if (gb && gb <= 4) return 900 * MB;
+  return 1500 * MB;
+}
+
+function estimatePeakBytes(fileBytes, durationSeconds) {
+  const audio = (durationSeconds || 0) * BYTES_PER_AUDIO_SECOND * 3;
+  return fileBytes + audio;
+}
+
+/**
+ * Advice, never a block. The estimate is approximate and the person in front of
+ * the screen knows their machine better than we do, so a long file still runs
+ * if they ask for it.
+ */
+function sizeAdvice(fileBytes, durationSeconds) {
+  const peak = estimatePeakBytes(fileBytes, durationSeconds);
+  const budget = memoryBudgetBytes();
+  if (peak < budget * 0.7) return null;
+
+  const where = state.isMobile ? 'a phone' : 'a browser tab';
+  const level = peak > budget ? 'high' : 'medium';
+  const lead = level === 'high'
+    ? `This is more than ${where} can comfortably hold in memory.`
+    : `This is close to what ${where} can hold in memory.`;
+
+  return {
+    level,
+    html:
+      `<strong>${lead}</strong> Everything here is decoded and kept in memory at once, ` +
+      `so a recording this long may make the tab run out and reload, losing the work. ` +
+      `You can still try it. The <a href="#desktop">desktop version</a> has no such limit ` +
+      `and is considerably faster.`,
+  };
+}
 
 /* ---------------- runtime detection ---------------- */
 
@@ -100,6 +163,17 @@ async function detectRuntime() {
   }
 
   updateEstimate();
+
+  if (state.isMobile) {
+    // Only phones get told this. On a laptop it is noise.
+    const mb = MODEL_MB[el.model.value]?.[state.device] ?? 197;
+    el.mobileNote.innerHTML =
+      'You are on a phone, so two things are worth knowing. The model is a ' +
+      `${mb} MB one-time download, which you may want on wi-fi. ` +
+      'And phones have far less memory than laptops, so keep recordings short here and ' +
+      'use the <a href="#desktop">desktop version</a> for anything long.';
+    el.mobileNote.classList.remove('hidden');
+  }
 }
 
 /** Round a duration to something a human would actually say out loud. */
@@ -202,6 +276,17 @@ function showError(html) {
   el.errorBox.classList.remove('hidden');
 }
 
+function showAdvice(advice) {
+  if (!advice) {
+    el.advice.classList.add('hidden');
+    el.advice.innerHTML = '';
+    return;
+  }
+  el.advice.innerHTML = advice.html;
+  el.advice.classList.toggle('is-high', advice.level === 'high');
+  el.advice.classList.remove('hidden');
+}
+
 function clearError() {
   el.errorBox.classList.add('hidden');
   el.errorBox.textContent = '';
@@ -261,6 +346,7 @@ function setFile(file) {
   if (!file) return;
 
   clearError();
+  showAdvice(null);
   resetOutput();
   releasePreview();
 
@@ -286,11 +372,7 @@ function setFile(file) {
       state.duration = preview.duration;
       el.fileMeta.textContent = `${formatBytes(file.size)} · ${formatDuration(preview.duration)}`;
       updateEstimate();
-      if (preview.duration > 3600) {
-        showError(
-          '<strong>Heads up:</strong> that is over an hour of audio. It will work, but it needs a lot of memory and will take a while. If your browser runs out of memory, split the file first.'
-        );
-      }
+      showAdvice(sizeAdvice(file.size, preview.duration));
     }
   };
 
@@ -316,6 +398,7 @@ function clearFile() {
   el.fileInput.value = '';
   resetOutput();
   clearError();
+  showAdvice(null);
 }
 
 function resetOutput() {
@@ -629,4 +712,5 @@ window.addEventListener('beforeunload', (e) => {
   if (state.running) e.preventDefault();
 });
 
+state.isMobile = isMobileDevice();
 detectRuntime();

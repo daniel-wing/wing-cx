@@ -270,6 +270,22 @@
     }
 
     .message.is-error { border-color: rgba(252, 165, 165, 0.45); color: #ffe4e4; }
+
+    /* Advice, not failure: amber rather than red, and it never blocks a run. */
+    .message.is-advice {
+      border-color: rgba(252, 211, 77, 0.4);
+      background: rgba(0, 0, 0, 0.26);
+      color: var(--text-muted);
+    }
+
+    .message.is-advice.is-high { border-color: rgba(252, 211, 77, 0.7); }
+    .message.is-advice strong { color: #fde68a; font-weight: 700; }
+    .message.is-advice a, .mobile-note a { color: #ffffff; font-weight: 600; }
+
+    .mobile-note {
+      border-left: 2px solid rgba(252, 211, 77, 0.5);
+      padding-left: 0.8rem;
+    }
     .message strong { font-weight: 700; }
 
     /* ---------- Output ---------- */
@@ -434,7 +450,7 @@
     <h1 class="page-title">Transcribe.</h1>
     <p class="page-lede">
       Drop in a video or audio file and get a clean transcript plus subtitles.
-      Free, no sign-up, no limits.
+      Free, no sign-up, no account.
     </p>
 
     <p class="privacy-note">
@@ -499,6 +515,7 @@
             </span>
           </div>
         </div>
+        <p class="hint mobile-note hidden" id="mobile-note"></p>
         <p class="hint" id="engine-hint">
           The model downloads once, then your browser caches it — later visits start instantly.
         </p>
@@ -547,6 +564,9 @@
           <p class="progress-note hidden" id="progress-note"></p>
         </div>
       </section>
+
+      <!-- Size advice. Not an error: the run is still allowed. -->
+      <div class="message is-advice hidden" id="advice-box"></div>
 
       <!-- Errors -->
       <div class="message is-error hidden" id="error-box"></div>
