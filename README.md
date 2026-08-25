@@ -13,9 +13,17 @@ self-contained `index.html` with inline CSS. Fonts are pulled from Google Fonts.
 
 ```
 .
-├── index.html   # the whole site: markup + inline styles
+├── index.html            # the whole site: markup + inline styles
+├── og-image.jpg          # 1200x630 social share card
+├── favicon.svg           # primary icon (scales to any size)
+├── favicon-32.png        # raster fallback
+├── apple-touch-icon.png  # 180x180, iOS home screen
 └── README.md
 ```
+
+The icons and share card are generated to match the site's palette
+(`#4a9ec8` → `#3681ab`) and Plus Jakarta Sans. If the hero copy changes,
+regenerate `og-image.jpg` so the card doesn't drift out of sync.
 
 ## Running locally
 
