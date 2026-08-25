@@ -34,6 +34,9 @@
   padding: 0;
 }
 
+/* Column layout so .page can absorb the leftover height and hold the footer
+   at the bottom of the viewport. Without this a short page (e.g. /signals
+   with one card) leaves the footer stranded mid-screen. */
 body {
   background: var(--bg-bottom);
   color: var(--text-main);
@@ -41,6 +44,8 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Fixed so the gradient doesn't stretch or tile on long, scrolling pages. */
@@ -160,9 +165,11 @@ a { color: inherit; }
 /* ---------- Page shell ---------- */
 
 .page {
+  width: 100%;
   max-width: 960px;
   margin: 0 auto;
   padding: 1rem 2.5rem 5rem 2.5rem;
+  flex: 1 0 auto;
 }
 
 .breadcrumb {
@@ -289,9 +296,11 @@ a { color: inherit; }
 /* ---------- Footer ---------- */
 
 .site-footer {
+  width: 100%;
   max-width: 960px;
   margin: 0 auto;
   padding: 0 2.5rem 3rem 2.5rem;
+  flex-shrink: 0;
   font-size: 0.8rem;
   color: var(--text-faint);
   display: flex;
