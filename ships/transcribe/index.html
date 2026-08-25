@@ -354,9 +354,9 @@
           <div class="field">
             <label for="model">Model</label>
             <select id="model">
-              <option value="onnx-community/whisper-tiny">Tiny — fastest, roughest (~40 MB)</option>
-              <option value="onnx-community/whisper-base" selected>Base — balanced (~80 MB)</option>
-              <option value="onnx-community/whisper-small">Small — most accurate, slowest (~250 MB)</option>
+              <option value="onnx-community/whisper-tiny">Tiny — fastest, roughest</option>
+              <option value="onnx-community/whisper-base" selected>Base — balanced</option>
+              <option value="onnx-community/whisper-small">Small — most accurate, slowest</option>
             </select>
           </div>
           <div class="field">
@@ -483,6 +483,8 @@
     <span>Powered by OpenAI Whisper via transformers.js</span>
   </footer>
 
-  <script type="module" src="./app.js"></script>
+  <!-- Absolute, not "./app.js": the page is served at /ships/transcribe with no
+       trailing slash, so a relative src would resolve to /ships/app.js. -->
+  <script type="module" src="/ships/transcribe/app.js"></script>
 </body>
 </html>
