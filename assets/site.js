@@ -4,19 +4,6 @@
 (function () {
   'use strict';
 
-  /* ---------------- pinned header ---------------- */
-
-  function initStickyHeader() {
-    const header = document.querySelector('.site-header');
-    if (!header) return;
-    const update = () => header.classList.toggle('is-stuck', window.scrollY > 8);
-    update();
-    window.addEventListener('scroll', update, { passive: true });
-    // Landing on an anchor such as #desktop starts the page part-scrolled, and
-    // that jump can land after this runs without firing a scroll event.
-    window.addEventListener('load', update);
-  }
-
   /* ---------------- language ---------------- */
 
   const STORAGE_KEY = 'wing-lang';
@@ -106,7 +93,6 @@
   };
 
   function init() {
-    initStickyHeader();
     initLanguage();
   }
 
