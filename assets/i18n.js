@@ -9,6 +9,7 @@ window.WING_STRINGS = {
     'nav.signals': 'Signals',
     'nav.linkedin': 'LinkedIn',
     'nav.sayhi': 'Say hi',
+    'nav.whatsapp': 'WhatsApp',
     'lang.label': 'Language',
 
     /* ---- home ---- */
@@ -145,6 +146,7 @@ window.WING_STRINGS = {
     'nav.signals': 'Señales',
     'nav.linkedin': 'LinkedIn',
     'nav.sayhi': 'Saluda',
+    'nav.whatsapp': 'WhatsApp',
     'lang.label': 'Idioma',
 
     /* ---- home ---- */
