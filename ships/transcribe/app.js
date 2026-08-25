@@ -99,17 +99,32 @@ function isMobileDevice() {
 /** How much working memory this device can plausibly give one tab. */
 function memoryBudgetBytes() {
   const MB = 1024 * 1024;
-  // Phones are the tight case: iOS in particular kills the tab rather than
-  // throwing something we could catch and report.
-  if (state.isMobile) return 350 * MB;
+  // Calibrated against an observed failure rather than guessed: an iPhone
+  // running iOS 26 crashed Safari while building a session for the base model
+  // on WebGPU, whose weights alone come to about 400 MB once allocated. So the
+  // real ceiling sits below that. iOS kills the tab outright rather than
+  // raising anything catchable, which is why this has to be predicted up front.
+  if (state.isMobile) return 400 * MB;
   const gb = navigator.deviceMemory;
   if (gb && gb <= 4) return 900 * MB;
   return 1500 * MB;
 }
 
+/**
+ * The model dominates, and it costs the same whether the recording is two
+ * minutes or two hours. Leaving it out of this sum is what let a 2 minute clip
+ * be declared fine on an iPhone and then crash the tab while building the
+ * inference session. Weights need roughly double their size once the runtime
+ * has its arena and buffers allocated.
+ */
+function modelBytes() {
+  const mb = MODEL_MB[el.model.value]?.[state.device] ?? 197;
+  return mb * 1024 * 1024 * 2;
+}
+
 function estimatePeakBytes(fileBytes, durationSeconds) {
   const audio = (durationSeconds || 0) * BYTES_PER_AUDIO_SECOND * 3;
-  return fileBytes + audio;
+  return fileBytes + audio + modelBytes();
 }
 
 /**
@@ -124,6 +139,14 @@ function sizeAdvice(fileBytes, durationSeconds) {
 
   const where = state.isMobile ? 'a phone' : 'a browser tab';
   const level = peak > budget ? 'high' : 'medium';
+
+  // Say which half is the problem, because the fix differs. A heavy model is
+  // fixed by picking a smaller one; a long recording is not.
+  const modelHeavy = modelBytes() > (peak - modelBytes());
+  const cause = modelHeavy
+    ? `The ${el.model.selectedOptions[0].textContent.split('—')[0].trim()} model is the bulk of it, so a smaller model is the quickest fix.`
+    : 'A recording this long is the bulk of it.';
+
   const lead = level === 'high'
     ? `This is more than ${where} can comfortably hold in memory.`
     : `This is close to what ${where} can hold in memory.`;
@@ -131,11 +154,19 @@ function sizeAdvice(fileBytes, durationSeconds) {
   return {
     level,
     html:
-      `<strong>${lead}</strong> Everything here is decoded and kept in memory at once, ` +
-      `so a recording this long may make the tab run out and reload, losing the work. ` +
-      `You can still try it. The <a href="#desktop">desktop version</a> has no such limit ` +
-      `and is considerably faster.`,
+      `<strong>${lead}</strong> ${cause} If it runs out, the tab reloads and the work is ` +
+      `lost, with no warning from the browser. You can still try it. The ` +
+      `<a href="#desktop">desktop version</a> has no such limit and is considerably faster.`,
   };
+}
+
+/** Re-run the advice whenever anything feeding it changes. */
+function refreshAdvice() {
+  if (!state.file) {
+    showAdvice(null);
+    return;
+  }
+  showAdvice(sizeAdvice(state.file.size, state.duration));
 }
 
 /* ---------------- runtime detection ---------------- */
@@ -162,16 +193,22 @@ async function detectRuntime() {
     if (spec) option.textContent = `${spec.label} (~${spec[state.device]} MB)`;
   }
 
+  // Phones cannot hold the base model. Choose one that fits before the person
+  // has any chance to press Generate and lose the tab.
+  if (state.isMobile && el.model.querySelector('option[value$="whisper-tiny"]')) {
+    el.model.value = 'onnx-community/whisper-tiny';
+  }
+
   updateEstimate();
 
   if (state.isMobile) {
     // Only phones get told this. On a laptop it is noise.
     const mb = MODEL_MB[el.model.value]?.[state.device] ?? 197;
     el.mobileNote.innerHTML =
-      'You are on a phone, so two things are worth knowing. The model is a ' +
-      `${mb} MB one-time download, which you may want on wi-fi. ` +
-      'And phones have far less memory than laptops, so keep recordings short here and ' +
-      'use the <a href="#desktop">desktop version</a> for anything long.';
+      'You are on a phone, so this has picked the smallest model. Phones cannot hold the ' +
+      'larger ones in memory, and Safari responds by reloading the tab rather than showing ' +
+      `an error. It is still a ${mb} MB one-time download, so wi-fi is worth it. For longer ` +
+      'recordings or better accuracy, the <a href="#desktop">desktop version</a> has neither limit.';
     el.mobileNote.classList.remove('hidden');
   }
 }
@@ -372,7 +409,7 @@ function setFile(file) {
       state.duration = preview.duration;
       el.fileMeta.textContent = `${formatBytes(file.size)} · ${formatDuration(preview.duration)}`;
       updateEstimate();
-      showAdvice(sizeAdvice(file.size, preview.duration));
+      refreshAdvice();
     }
   };
 
@@ -683,7 +720,7 @@ el.clearFile.addEventListener('click', clearFile);
 el.runBtn.addEventListener('click', startRun);
 el.cancelBtn.addEventListener('click', stopRun);
 
-el.model.addEventListener('change', updateEstimate);
+el.model.addEventListener('change', () => { updateEstimate(); refreshAdvice(); });
 
 for (const tab of document.querySelectorAll('.tab')) {
   tab.addEventListener('click', () => setView(tab.dataset.view));
