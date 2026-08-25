@@ -6,6 +6,8 @@
   <title>Ships — wing.cx</title>
   <meta name="description" content="Small, free tools Daniel Wing has built and shipped. No sign-ups, no accounts, no cost." />
   <link rel="canonical" href="https://wing.cx/ships" />
+  <link rel="alternate" hreflang="en" href="https://wing.cx/ships?lang=en" />
+  <link rel="alternate" hreflang="es" href="https://wing.cx/ships?lang=es" />
   <meta name="theme-color" content="#3681ab" />
 
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -23,6 +25,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/site.css">
+  <script src="/assets/i18n.js" defer></script>
+  <script src="/assets/site.js" defer></script>
 
   <style>
     .ships-grid {
@@ -133,35 +137,39 @@
     <a href="/" class="brand">Wing</a>
 
     <nav class="nav-pill-center">
-      <a href="/ships" class="nav-item is-active">Ships</a>
+      <a href="/ships" class="nav-item is-active" data-i18n="nav.ships">Ships</a>
       <a href="https://www.linkedin.com/in/daniel-wing" target="_blank" rel="noopener noreferrer" class="nav-item">
         <svg viewBox="0 0 24 24">
           <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76a1.65 1.65 0 1 0 0-3.3 1.65 1.65 0 0 0 0 3.3m1.39 9.74v-8.37H5.07v8.37h2.78z"/>
         </svg>
-        LinkedIn
+        <span data-i18n="nav.linkedin">LinkedIn</span>
       </a>
     </nav>
 
     <div class="nav-actions">
-      <a href="mailto:wing@wing.cx" class="btn-sayhi">Say Hi 👋</a>
+      <div class="lang-toggle" role="group" data-i18n-label="lang.label" aria-label="Language">
+        <button type="button" class="lang-opt" data-lang="en">EN</button>
+        <button type="button" class="lang-opt" data-lang="es">ES</button>
+      </div>
+      <a href="mailto:wing@wing.cx" class="btn-sayhi"><span class="sayhi-text" data-i18n="nav.sayhi">Say Hi</span> <span aria-hidden="true">👋</span></a>
     </div>
   </header>
 
   <main class="page">
-    <p class="breadcrumb"><a href="/">Wing</a> <span>/</span> <span>Ships</span></p>
+    <p class="breadcrumb"><a href="/">Wing</a> <span>/</span> <span data-i18n="nav.ships">Ships</span></p>
 
-    <h1 class="page-title">Ships.</h1>
-    <p class="page-lede">
+    <h1 class="page-title" data-i18n="ships.h1">Ships.</h1>
+    <p class="page-lede" data-i18n="ships.lede">
       Things I've built and actually put out there. All free, no sign-up, no account —
       just open the page and use it.
     </p>
 
     <div class="ships-grid">
 
-      <a href="/ships/transcribe" class="ship-card">
-        <span class="ship-status">Live</span>
-        <h2 class="ship-name">Transcribe</h2>
-        <p class="ship-desc">
+      <a href="/ships/scribe" class="ship-card">
+        <span class="ship-status" data-i18n="ships.status.live">Live</span>
+        <h2 class="ship-name" data-i18n="ships.scribe.name">Scribe</h2>
+        <p class="ship-desc" data-i18n="ships.scribe.desc">
           Drop in a video or audio file and get a clean transcript plus subtitles.
           Whisper runs inside your own browser, so the file never leaves your machine
           and there's nothing to pay for.
@@ -169,20 +177,20 @@
         <div class="ship-tags">
           <span class="tag">Whisper</span>
           <span class="tag">WebGPU</span>
-          <span class="tag">Private</span>
+          <span class="tag" data-i18n="ships.scribe.tag3">Private</span>
         </div>
-        <p class="ship-open">Open <span class="arrow">→</span></p>
+        <p class="ship-open"><span data-i18n="ships.open">Open</span> <span class="arrow">→</span></p>
       </a>
 
       <div class="ship-card is-empty">
-        <p>More on the way</p>
+        <p data-i18n="ships.more">More on the way</p>
       </div>
 
     </div>
   </main>
 
   <footer class="site-footer">
-    <span>© Daniel Wing</span>
+    <span data-i18n="footer.copyright">© Daniel Wing</span>
     <a href="/">wing.cx</a>
     <a href="mailto:wing@wing.cx">wing@wing.cx</a>
   </footer>

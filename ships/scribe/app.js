@@ -1,7 +1,10 @@
-/* Transcribe — UI glue. Picks a runtime, decodes the file to 16 kHz mono,
+/* Scribe — UI glue. Picks a runtime, decodes the file to 16 kHz mono,
    hands it to the worker, and turns the result into text + SRT. */
 
 const $ = (id) => document.getElementById(id);
+
+/** Shorthand for the shared translator; falls back to the key if unloaded. */
+const t = (key, vars) => (window.wingT ? window.wingT(key, vars) : key);
 
 const el = {
   dropzone: $('dropzone'),
@@ -40,9 +43,9 @@ const el = {
 
 // Approximate one-time download per model, per runtime (encoder + decoder).
 const MODEL_MB = {
-  'onnx-community/whisper-tiny':  { webgpu: 114, wasm: 39,  label: 'Tiny — fastest, roughest' },
-  'onnx-community/whisper-base':  { webgpu: 197, wasm: 73,  label: 'Base — balanced' },
-  'onnx-community/whisper-small': { webgpu: 559, wasm: 238, label: 'Small — most accurate, and no slower on a GPU' },
+  'onnx-community/whisper-tiny':  { webgpu: 114, wasm: 39 },
+  'onnx-community/whisper-base':  { webgpu: 197, wasm: 73 },
+  'onnx-community/whisper-small': { webgpu: 559, wasm: 238 },
 };
 
 /**
@@ -137,27 +140,21 @@ function sizeAdvice(fileBytes, durationSeconds) {
   const budget = memoryBudgetBytes();
   if (peak < budget * 0.7) return null;
 
-  const where = state.isMobile ? 'a phone' : 'a browser tab';
+  const where = t(state.isMobile ? 'scribe.advice.where.phone' : 'scribe.advice.where.tab');
   const level = peak > budget ? 'high' : 'medium';
 
   // Say which half is the problem, because the fix differs. A heavy model is
   // fixed by picking a smaller one; a long recording is not.
   const modelHeavy = modelBytes() > (peak - modelBytes());
   const cause = modelHeavy
-    ? `The ${el.model.selectedOptions[0].textContent.split('—')[0].trim()} model is the bulk of it, so a smaller model is the quickest fix.`
-    : 'A recording this long is the bulk of it.';
+    ? t('scribe.advice.cause.model', {
+        model: el.model.selectedOptions[0].textContent.split('—')[0].trim(),
+      })
+    : t('scribe.advice.cause.length');
 
-  const lead = level === 'high'
-    ? `This is more than ${where} can comfortably hold in memory.`
-    : `This is close to what ${where} can hold in memory.`;
+  const lead = t(level === 'high' ? 'scribe.advice.lead.high' : 'scribe.advice.lead.medium', { where });
 
-  return {
-    level,
-    html:
-      `<strong>${lead}</strong> ${cause} If it runs out, the tab reloads and the work is ` +
-      `lost, with no warning from the browser. You can still try it. The ` +
-      `<a href="#desktop">desktop version</a> has no such limit and is considerably faster.`,
-  };
+  return { level, html: `<strong>${lead}</strong> ${cause} ${t('scribe.advice.body')}` };
 }
 
 /** Re-run the advice whenever anything feeding it changes. */
@@ -189,18 +186,18 @@ async function detectRuntime() {
   const fast = state.device === 'webgpu';
   el.runtimeBadge.classList.toggle('is-fast', fast);
 
-  el.runtimeText.textContent = fast ? 'WebGPU' : (state.isMobile ? 'CPU (safest here)' : 'CPU (WASM)');
+  el.runtimeText.textContent = fast
+    ? 'WebGPU'
+    : t(state.isMobile ? 'scribe.runtime.cpuMobile' : 'scribe.runtime.cpu');
 
-  el.engineHint.textContent = fast
-    ? 'Your GPU will do the work. The model downloads once, then your browser caches it — later visits start instantly.'
-    : state.isMobile
-      ? 'This runs on the CPU. Phones do advertise GPU support, but using it here crashes the tab outright, so the slower path is the one that actually finishes.'
-      : 'Your browser has no WebGPU, so this falls back to the CPU and will be noticeably slower. Chrome or Edge on a desktop gives you the fast path.';
+  el.engineHint.textContent = t(
+    fast ? 'scribe.hint.gpu' : state.isMobile ? 'scribe.hint.mobile' : 'scribe.hint.cpu'
+  );
 
   // Now that we know the runtime, show download sizes that are actually true.
   for (const option of el.model.options) {
     const spec = MODEL_MB[option.value];
-    if (spec) option.textContent = `${spec.label} (~${spec[state.device]} MB)`;
+    if (spec) option.textContent = `${t(option.dataset.modelLabel)} (~${spec[state.device]} MB)`;
   }
 
   // Phones cannot hold the base model. Choose one that fits before the person
@@ -214,12 +211,7 @@ async function detectRuntime() {
   if (state.isMobile) {
     // Only phones get told this. On a laptop it is noise.
     const mb = MODEL_MB[el.model.value]?.[state.device] ?? 197;
-    el.mobileNote.innerHTML =
-      'You are on a phone, so this uses the smallest model and the CPU rather than the GPU. ' +
-      'Phones advertise GPU support but crash the tab when it is actually used for this, so ' +
-      `the slower route is the one that finishes. It is a ${mb} MB one-time download. ` +
-      'Expect roughly a minute per minute of recording; for anything longer, or for better ' +
-      'accuracy, the <a href="#desktop">desktop version</a> is far quicker and has no limit.';
+    el.mobileNote.innerHTML = t('scribe.mobileNote', { mb });
     el.mobileNote.classList.remove('hidden');
   }
 }
@@ -235,11 +227,11 @@ function roughDuration(seconds) {
 
 /** Phrasing for the time-remaining line, which reads as a full sentence. */
 function remainingText(seconds) {
-  if (seconds < 20) return 'Almost done.';
-  if (seconds < 50) return 'Less than a minute left.';
-  if (seconds < 90) return 'About a minute left.';
-  if (seconds < 60 * 60) return `About ${Math.round(seconds / 60)} min left.`;
-  return `About ${(seconds / 3600).toFixed(1)} hr left.`;
+  if (seconds < 20) return t('scribe.left.almost');
+  if (seconds < 50) return t('scribe.left.under');
+  if (seconds < 90) return t('scribe.left.about1');
+  if (seconds < 60 * 60) return t('scribe.left.min', { n: Math.round(seconds / 60) });
+  return t('scribe.left.hr', { n: (seconds / 3600).toFixed(1) });
 }
 
 /**
@@ -259,18 +251,28 @@ function updateEstimate() {
   const high = low * 2;
 
   if (high < 60) {
-    el.estimate.textContent = 'Should take under a minute.';
+    el.estimate.textContent = t('scribe.est.under');
     return;
   }
 
   const lowMin = Math.max(1, Math.round(low / 60));
   const highMin = Math.max(lowMin + 1, Math.round(high / 60));
-  el.estimate.textContent = `Roughly ${lowMin}–${highMin} min, depending on your computer.`;
+  el.estimate.textContent = t('scribe.est.range', { low: lowMin, high: highMin });
 }
 
-/** Human-readable name for a whisper language code, from the picker itself. */
+/**
+ * Human-readable language name in whichever language the page is showing.
+ * Intl.DisplayNames already knows all of these, so there is nothing to
+ * translate by hand, and it gets the casing convention right per locale
+ * (English capitalises language names, Spanish does not).
+ */
 function languageName(code) {
   if (!code) return '';
+  try {
+    const name = new Intl.DisplayNames([window.WING_LANG || 'en'], { type: 'language' }).of(code);
+    if (name && name !== code) return name;
+  } catch { /* fall back to the picker below */ }
+
   for (const option of el.language.options) {
     if (option.value === code) return option.textContent.split('—')[0].trim();
   }
@@ -488,14 +490,9 @@ function handleProgressEvent(event) {
     }
     if (total > 0) {
       setProgress({
-        label: `Downloading the speech model — ${formatBytes(loaded)} of ${formatBytes(total)}`,
+        label: t('scribe.download.label', { loaded: formatBytes(loaded), total: formatBytes(total) }),
         pct: (loaded / total) * 100,
-        note:
-          '<strong>Why is it downloading something?</strong> Because the transcription ' +
-          'happens on your computer, the speech model has to come to your file — rather ' +
-          'than your file being sent off to someone else\'s computer. That is the whole ' +
-          'trade: a one-time download instead of uploading your video to a server. ' +
-          'Your browser keeps the model afterwards, so this only happens once.',
+        note: t('scribe.download.why'),
       });
     }
   }
@@ -529,7 +526,9 @@ function handleChunk({ done, total, elapsed }) {
   }
 
   setProgress({
-    label: total > 1 ? `Transcribing — segment ${Math.min(done + 1, total)} of ${total}` : 'Transcribing…',
+    label: total > 1
+      ? t('scribe.stage.segment', { n: Math.min(done + 1, total), total })
+      : t('scribe.stage.transcribing'),
     pct,
     note,
   });
@@ -549,15 +548,17 @@ function ensureWorker() {
       handleProgressEvent(msg.event);
     } else if (msg.type === 'stage') {
       if (msg.stage === 'loading') {
-        setProgress({ label: 'Preparing the model…', indeterminate: true, note: '' });
+        setProgress({ label: t('scribe.stage.preparing'), indeterminate: true, note: '' });
       } else if (msg.stage === 'warming') {
-        setProgress({ label: 'Warming up your GPU…', indeterminate: true, note: '' });
+        setProgress({ label: t('scribe.stage.warming'), indeterminate: true, note: '' });
       } else if (msg.stage === 'detecting') {
-        setProgress({ label: 'Working out the language…', indeterminate: true, note: '' });
+        setProgress({ label: t('scribe.stage.detecting'), indeterminate: true, note: '' });
       } else if (msg.stage === 'transcribing') {
         state.totalChunks = msg.totalChunks ?? 0;
         setProgress({
-          label: state.totalChunks > 1 ? `Transcribing — segment 1 of ${state.totalChunks}` : 'Transcribing…',
+          label: state.totalChunks > 1
+            ? t('scribe.stage.segment', { n: 1, total: state.totalChunks })
+            : t('scribe.stage.transcribing'),
           pct: 0,
           note: '',
         });
@@ -574,7 +575,7 @@ function ensureWorker() {
   });
 
   worker.addEventListener('error', (e) => {
-    failRun(e.message || 'The transcription worker failed to start.');
+    failRun(e.message || t('scribe.err.worker'));
   });
 
   return worker;
@@ -588,7 +589,7 @@ function stopRun() {
   downloads.clear();
   state.running = false;
   el.runBtn.disabled = false;
-  el.runBtn.textContent = 'Generate transcript';
+  el.runBtn.textContent = t('scribe.run');
   el.cancelBtn.classList.add('hidden');
   el.progressWrap.classList.add('hidden');
   el.progressNote.classList.add('hidden');
@@ -599,7 +600,7 @@ function stopRun() {
 
 function failRun(message) {
   stopRun();
-  showError(`<strong>Transcription failed.</strong> ${message}`);
+  showError(t('scribe.err.failed', { message }));
 }
 
 function finish({ text, chunks, ms }) {
@@ -610,15 +611,15 @@ function finish({ text, chunks, ms }) {
   state.srt = buildSrt(chunks || []);
 
   if (!state.txt) {
-    showError('<strong>Nothing to transcribe.</strong> No speech was detected in that file.');
+    showError(t('scribe.err.nospeech'));
     return;
   }
 
-  const bits = [`Done in ${formatDuration(seconds)}`];
+  const bits = [t('scribe.done', { time: formatDuration(seconds) })];
   if (state.detected?.code) {
-    const name = languageName(state.detected.code);
+    const language = languageName(state.detected.code);
     const confident = (state.detected.confidence ?? 0) >= 0.6;
-    bits.push(confident ? `detected ${name}` : `detected ${name}, but not confidently`);
+    bits.push(t(confident ? 'scribe.done.detected' : 'scribe.done.unsure', { language }));
   }
   el.doneNote.textContent = bits.join(' · ');
   el.doneNote.classList.toggle('is-unsure', !!state.detected && (state.detected.confidence ?? 0) < 0.6);
@@ -626,8 +627,7 @@ function finish({ text, chunks, ms }) {
   // Any wrong guess should be correctable without hunting for the control.
   el.langCheck.classList.toggle('hidden', !state.detected?.code);
   if (state.detected?.code) {
-    el.langCheck.innerHTML =
-      `Not ${languageName(state.detected.code)}? Pick the right language above and run it again.`;
+    el.langCheck.innerHTML = t('scribe.langCheck', { language: languageName(state.detected.code) });
   }
   el.outputPanel.classList.remove('hidden');
   setView(state.view);
@@ -643,23 +643,19 @@ async function startRun() {
 
   state.running = true;
   el.runBtn.disabled = true;
-  el.runBtn.textContent = 'Working…';
+  el.runBtn.textContent = t('scribe.running');
   el.cancelBtn.classList.remove('hidden');
   el.model.disabled = true;
   el.language.disabled = true;
 
-  setProgress({ label: 'Reading the audio…', indeterminate: true, note: '' });
+  setProgress({ label: t('scribe.stage.reading'), indeterminate: true, note: '' });
 
   let audio;
   try {
     ({ audio } = await decodeToMono16k(state.file));
   } catch (err) {
     stopRun();
-    showError(
-      '<strong>Could not read the audio from that file.</strong> ' +
-      'Your browser can\'t decode this container or codec — MKV and AVI usually fail here. ' +
-      'Re-saving it as MP4, WebM, M4A or WAV will fix it.'
-    );
+    showError(t('scribe.err.decode'));
     return;
   }
 
@@ -667,7 +663,7 @@ async function startRun() {
 
   if (!audio.length) {
     stopRun();
-    showError('<strong>That file has no audio track.</strong>');
+    showError(t('scribe.err.noaudio'));
     return;
   }
 
@@ -740,12 +736,12 @@ for (const tab of document.querySelectorAll('.tab')) {
 el.copyBtn.addEventListener('click', async () => {
   try {
     await navigator.clipboard.writeText(el.transcript.value);
-    el.copyBtn.textContent = 'Copied';
+    el.copyBtn.textContent = t('scribe.copied');
   } catch {
     el.transcript.select();
-    el.copyBtn.textContent = 'Press ⌘C';
+    el.copyBtn.textContent = t('scribe.copyManual');
   }
-  setTimeout(() => { el.copyBtn.textContent = 'Copy'; }, 1600);
+  setTimeout(() => { el.copyBtn.textContent = t('scribe.copy'); }, 1600);
 });
 
 el.dlTxt.addEventListener('click', () => {
@@ -758,6 +754,15 @@ el.dlSrt.addEventListener('click', () => {
 
 window.addEventListener('beforeunload', (e) => {
   if (state.running) e.preventDefault();
+});
+
+// Anything written by script has to be redrawn on a language switch; the
+// shared runtime only handles markup it can see.
+document.addEventListener('wing:languagechange', () => {
+  // Safe during a run: these only rewrite labels and hints, and never touch
+  // the worker. Gating them on idle left stale text after a job finished.
+  detectRuntime();
+  refreshAdvice();
 });
 
 state.isMobile = isMobileDevice();

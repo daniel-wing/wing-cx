@@ -56,15 +56,29 @@ a { color: inherit; }
 
 /* ---------- Header ---------- */
 
+/* Pinned, so navigation is reachable from anywhere on a long page without
+   scrolling back to the top. The blur only appears once the page has moved,
+   otherwise it sits as a visible band over the hero. */
 .site-header {
-  position: relative;
-  z-index: 20;
+  position: sticky;
+  top: 0;
+  z-index: 40;
   width: 100%;
   padding: 1.75rem 2.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
+  transition: background 0.25s ease, backdrop-filter 0.25s ease, padding 0.25s ease;
+}
+
+.site-header.is-stuck {
+  background: rgba(38, 96, 128, 0.72);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+  padding-top: 0.9rem;
+  padding-bottom: 0.9rem;
 }
 
 .brand {
@@ -134,6 +148,40 @@ a { color: inherit; }
 }
 
 .btn-sayhi:hover { background: rgba(255, 255, 255, 0.12); }
+
+/* ---------- Language toggle ---------- */
+
+.lang-toggle {
+  display: inline-flex;
+  gap: 2px;
+  background: var(--pill-bg);
+  border: 1px solid var(--pill-border);
+  border-radius: var(--radius-pill);
+  padding: 3px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.lang-opt {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 0.32rem 0.7rem;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.lang-opt:hover { color: #ffffff; }
+
+.lang-opt.is-active {
+  background: #ffffff;
+  color: #1e293b;
+}
 
 /* ---------- Page shell ---------- */
 
@@ -286,9 +334,28 @@ a { color: inherit; }
 .site-footer a:hover { color: #ffffff; }
 
 @media (max-width: 900px) {
-  .site-header { padding: 1.25rem 1.25rem; }
-  .nav-pill-center { display: none; }
+  .site-header { padding: 1.25rem 1rem; gap: 0.5rem; }
+  .site-header.is-stuck { padding-top: 0.7rem; padding-bottom: 0.7rem; }
+
+  /* Kept visible: with a pinned header this is the way back, so hiding it
+     would defeat the point. Trimmed down to fit instead. */
+  .nav-pill-center { padding: 3px 4px; gap: 2px; }
+  .nav-item { padding: 0.4rem 0.75rem; font-size: 0.8rem; }
+
+  .brand { font-size: 1.15rem; }
+  .btn-sayhi { padding: 0.45rem 0.8rem; font-size: 0.8rem; }
   .page { padding: 0.5rem 1.25rem 4rem 1.25rem; }
   .site-footer { padding: 0 1.25rem 2.5rem 1.25rem; }
   .panel { padding: 1.15rem; }
+}
+
+/* Below this width the three header groups no longer fit side by side.
+   Navigation and the language switch keep their labels; the two links that
+   also exist elsewhere on the page shrink to their icons. */
+@media (max-width: 620px) {
+  .nav-item > span { display: none; }
+  .nav-item svg { width: 16px; height: 16px; }
+  .sayhi-text { display: none; }
+  .btn-sayhi { padding: 0.45rem 0.7rem; }
+  .lang-opt { padding: 0.3rem 0.55rem; font-size: 0.72rem; }
 }

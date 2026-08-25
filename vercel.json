@@ -1,0 +1,15 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "redirects": [
+    {
+      "source": "/ships/transcribe",
+      "destination": "/ships/scribe",
+      "permanent": true
+    },
+    {
+      "source": "/ships/transcribe/:path*",
+      "destination": "/ships/scribe/:path*",
+      "permanent": true
+    }
+  ]
+}

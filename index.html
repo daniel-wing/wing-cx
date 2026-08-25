@@ -1,4 +1,4 @@
-<!-- Version: V1.2 -->
+<!-- Version: V1.3 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,6 +7,8 @@
   <title>Wing — wing.cx</title>
   <meta name="description" content="Daniel Wing turns raw user complaints into clean data, and clean data into AI that actually solves the problem. AI & analytics for customer experience." />
   <link rel="canonical" href="https://wing.cx/" />
+  <link rel="alternate" hreflang="en" href="https://wing.cx/?lang=en" />
+  <link rel="alternate" hreflang="es" href="https://wing.cx/?lang=es" />
   <meta name="theme-color" content="#3681ab" />
 
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -32,6 +34,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/assets/site.css">
+  <script src="/assets/i18n.js" defer></script>
+  <script src="/assets/site.js" defer></script>
 
   <style>
     :root {
@@ -326,22 +332,26 @@
 <body>
 
   <!-- Top Navigation -->
-  <header>
-    <a href="#" class="brand">Wing</a>
+  <header class="site-header">
+    <a href="/" class="brand">Wing</a>
 
     <!-- Center Navigation Capsule -->
     <nav class="nav-pill-center">
-      <a href="/ships" class="nav-ships">Ships</a>
+      <a href="/ships" class="nav-ships" data-i18n="nav.ships">Ships</a>
       <a href="https://www.linkedin.com/in/daniel-wing" target="_blank" rel="noopener noreferrer" class="nav-item">
         <svg viewBox="0 0 24 24">
           <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76a1.65 1.65 0 1 0 0-3.3 1.65 1.65 0 0 0 0 3.3m1.39 9.74v-8.37H5.07v8.37h2.78z"/>
         </svg>
-        LinkedIn
+        <span data-i18n="nav.linkedin">LinkedIn</span>
       </a>
     </nav>
 
     <div class="nav-actions">
-      <a href="mailto:wing@wing.cx" class="btn-sayhi">Say Hi 👋</a>
+      <div class="lang-toggle" role="group" data-i18n-label="lang.label" aria-label="Language">
+        <button type="button" class="lang-opt" data-lang="en">EN</button>
+        <button type="button" class="lang-opt" data-lang="es">ES</button>
+      </div>
+      <a href="mailto:wing@wing.cx" class="btn-sayhi"><span class="sayhi-text" data-i18n="nav.sayhi">Say Hi</span> <span aria-hidden="true">👋</span></a>
     </div>
   </header>
 
@@ -356,17 +366,17 @@
     <!-- Massive Text Layout -->
     <div class="hero-content">
       <h1 class="giant-heading">
-        <span class="line-1">Daniel Wing</span>
-        <span class="subtitle-line">AI & Analytics for</span>
-        <span class="subtitle-line">Customer Experience</span>
+        <span class="line-1" data-i18n="home.h1.name">Daniel Wing</span>
+        <span class="subtitle-line" data-i18n="home.h1.line2">AI & Analytics for</span>
+        <span class="subtitle-line" data-i18n="home.h1.line3">Customer Experience</span>
       </h1>
 
-      <p class="hero-bio">
+      <p class="hero-bio" data-i18n="home.bio">
         Turning raw user complaints into clean data, and clean data into AI that actually solves the problem.
       </p>
 
       <div class="hero-actions">
-        <a href="/ships" class="btn-hero-primary">View my ships <span class="arrow">→</span></a>
+        <a href="/ships" class="btn-hero-primary"><span data-i18n="home.cta.ships">View my ships</span> <span class="arrow">→</span></a>
         <a href="https://www.linkedin.com/in/daniel-wing" target="_blank" rel="noopener noreferrer" class="btn-secondary">
           <svg viewBox="0 0 24 24">
             <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76a1.65 1.65 0 1 0 0-3.3 1.65 1.65 0 0 0 0 3.3m1.39 9.74v-8.37H5.07v8.37h2.78z"/>

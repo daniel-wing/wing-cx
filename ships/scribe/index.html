@@ -3,9 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Transcribe — wing.cx</title>
+  <title>Scribe — wing.cx</title>
   <meta name="description" content="Free browser-based video and audio transcription. Whisper runs locally on your own machine — your file is never uploaded. Export as TXT or SRT subtitles." />
-  <link rel="canonical" href="https://wing.cx/ships/transcribe" />
+  <link rel="canonical" href="https://wing.cx/ships/scribe" />
+  <link rel="alternate" hreflang="en" href="https://wing.cx/ships/scribe?lang=en" />
+  <link rel="alternate" hreflang="es" href="https://wing.cx/ships/scribe?lang=es" />
   <meta name="theme-color" content="#3681ab" />
 
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -14,8 +16,8 @@
 
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="wing.cx" />
-  <meta property="og:url" content="https://wing.cx/ships/transcribe" />
-  <meta property="og:title" content="Transcribe — free, private, in your browser" />
+  <meta property="og:url" content="https://wing.cx/ships/scribe" />
+  <meta property="og:title" content="Scribe — free, private, in your browser" />
   <meta property="og:description" content="Drop in a video or audio file and get a transcript plus SRT subtitles. Whisper runs locally in your browser — nothing is uploaded." />
   <meta property="og:image" content="https://wing.cx/og-image.jpg" />
 
@@ -25,6 +27,8 @@
   <link rel="preconnect" href="https://huggingface.co" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/site.css">
+  <script src="/assets/i18n.js" defer></script>
+  <script src="/assets/site.js" defer></script>
 
   <style>
     .stack { display: flex; flex-direction: column; gap: 1.25rem; }
@@ -430,52 +434,56 @@
     <a href="/" class="brand">Wing</a>
 
     <nav class="nav-pill-center">
-      <a href="/ships" class="nav-item is-active">Ships</a>
+      <a href="/ships" class="nav-item is-active" data-i18n="nav.ships">Ships</a>
       <a href="https://www.linkedin.com/in/daniel-wing" target="_blank" rel="noopener noreferrer" class="nav-item">
         <svg viewBox="0 0 24 24">
           <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76a1.65 1.65 0 1 0 0-3.3 1.65 1.65 0 0 0 0 3.3m1.39 9.74v-8.37H5.07v8.37h2.78z"/>
         </svg>
-        LinkedIn
+        <span data-i18n="nav.linkedin">LinkedIn</span>
       </a>
     </nav>
 
     <div class="nav-actions">
-      <a href="mailto:wing@wing.cx" class="btn-sayhi">Say Hi 👋</a>
+      <div class="lang-toggle" role="group" data-i18n-label="lang.label" aria-label="Language">
+        <button type="button" class="lang-opt" data-lang="en">EN</button>
+        <button type="button" class="lang-opt" data-lang="es">ES</button>
+      </div>
+      <a href="mailto:wing@wing.cx" class="btn-sayhi"><span class="sayhi-text" data-i18n="nav.sayhi">Say Hi</span> <span aria-hidden="true">👋</span></a>
     </div>
   </header>
 
   <main class="page">
-    <p class="breadcrumb"><a href="/">Wing</a> <span>/</span> <a href="/ships">Ships</a> <span>/</span> <span>Transcribe</span></p>
+    <p class="breadcrumb"><a href="/">Wing</a> <span>/</span> <a href="/ships" data-i18n="nav.ships">Ships</a> <span>/</span> <span data-i18n="scribe.crumb">Scribe</span></p>
 
-    <h1 class="page-title">Transcribe.</h1>
-    <p class="page-lede">
+    <h1 class="page-title" data-i18n="scribe.h1">Scribe.</h1>
+    <p class="page-lede" data-i18n="scribe.lede">
       Drop in a video or audio file and get a clean transcript plus subtitles.
       Free, no sign-up, no account.
     </p>
 
     <p class="privacy-note">
       <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
-      Everything runs inside your browser. Your file is never uploaded anywhere.
+      <span data-i18n="scribe.privacy">Everything runs inside your browser. Your file is never uploaded anywhere.</span>
     </p>
 
     <div class="stack">
 
       <!-- Settings -->
       <section class="panel">
-        <p class="section-label">Engine</p>
+        <p class="section-label" data-i18n="scribe.engine">Engine</p>
         <div class="settings">
           <div class="field">
-            <label for="model">Model</label>
+            <label for="model" data-i18n="scribe.model">Model</label>
             <select id="model">
-              <option value="onnx-community/whisper-tiny">Tiny — fastest, roughest</option>
-              <option value="onnx-community/whisper-base" selected>Base — balanced</option>
-              <option value="onnx-community/whisper-small">Small — most accurate, and no slower on a GPU</option>
+              <option value="onnx-community/whisper-tiny" data-model-label="scribe.model.tiny">Tiny — fastest, roughest</option>
+              <option value="onnx-community/whisper-base" data-model-label="scribe.model.base" selected>Base — balanced</option>
+              <option value="onnx-community/whisper-small" data-model-label="scribe.model.small">Small — most accurate, and no slower on a GPU</option>
             </select>
           </div>
           <div class="field">
-            <label for="language">Language</label>
+            <label for="language" data-i18n="scribe.language">Language</label>
             <select id="language">
-              <option value="" selected>Detect automatically</option>
+              <option value="" selected data-i18n="scribe.lang.auto">Detect automatically</option>
               <option value="en">English</option>
               <option value="es">Spanish — Español</option>
               <option value="pt">Portuguese — Português</option>
@@ -508,29 +516,25 @@
             </select>
           </div>
           <div class="field" style="flex: 0 0 auto;">
-            <label>Runtime</label>
+            <label data-i18n="scribe.runtime">Runtime</label>
             <span class="runtime-badge" id="runtime-badge">
               <span class="runtime-dot"></span>
-              <span id="runtime-text">Checking…</span>
+              <span id="runtime-text" data-i18n="scribe.runtime.checking">Checking…</span>
             </span>
           </div>
         </div>
         <p class="hint mobile-note hidden" id="mobile-note"></p>
-        <p class="hint" id="engine-hint">
+        <p class="hint" id="engine-hint" data-i18n="scribe.hint.gpu">
           The model downloads once, then your browser caches it — later visits start instantly.
         </p>
-        <p class="hint">
-          The language is detected from the audio itself, and whatever it settles on is
-          shown with the result — so a wrong guess is visible rather than silent. If it
-          ever picks wrong, set the language here and run it again.
-        </p>
+        <p class="hint" data-i18n="scribe.hint.language">The language is detected from the audio itself, and whatever it settles on is shown with the result, so a wrong guess is visible rather than silent. If it ever picks wrong, set the language here and run it again.</p>
       </section>
 
       <!-- Drop zone -->
-      <section id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="Choose a video or audio file">
+      <section id="dropzone" class="dropzone" tabindex="0" role="button" data-i18n-label="scribe.drop.aria" aria-label="Choose a video or audio file">
         <svg class="dropzone-icon" viewBox="0 0 24 24"><path d="M19.35 10.04A7.49 7.49 0 0 0 12 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 0 0 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
-        <p class="dropzone-title">Drop a video or audio file</p>
-        <p class="dropzone-sub">or click to browse — MP4, MOV, M4V, WebM, MP3, M4A, WAV</p>
+        <p class="dropzone-title" data-i18n="scribe.drop.title">Drop a video or audio file</p>
+        <p class="dropzone-sub" data-i18n="scribe.drop.sub">or click to browse — MP4, MOV, M4V, WebM, MP3, M4A, WAV</p>
         <input type="file" id="file-input" class="hidden" accept="video/*,audio/*" />
       </section>
 
@@ -541,15 +545,15 @@
             <p class="file-name" id="file-name"></p>
             <p class="file-meta" id="file-meta"></p>
           </div>
-          <button class="btn-icon" id="clear-file" title="Remove file" aria-label="Remove file">✕</button>
+          <button class="btn-icon" id="clear-file" data-i18n-title="scribe.file.remove" data-i18n-label="scribe.file.remove" title="Remove file" aria-label="Remove file">✕</button>
         </div>
 
         <video id="video-preview" class="media-preview hidden" controls preload="metadata"></video>
         <audio id="audio-preview" class="media-preview hidden" controls preload="metadata"></audio>
 
         <div class="actions">
-          <button class="btn-primary" id="run-btn">Generate transcript</button>
-          <button class="btn-secondary hidden" id="cancel-btn">Cancel</button>
+          <button class="btn-primary" id="run-btn" data-i18n="scribe.run">Generate transcript</button>
+          <button class="btn-secondary hidden" id="cancel-btn" data-i18n="scribe.cancel">Cancel</button>
           <span class="estimate" id="estimate"></span>
         </div>
 
@@ -575,31 +579,31 @@
       <section class="panel hidden" id="output-panel">
         <div class="output-head">
           <div>
-            <p class="section-label" style="margin-bottom: 0.35rem;">Transcript</p>
+            <p class="section-label" style="margin-bottom: 0.35rem;" data-i18n="scribe.transcript">Transcript</p>
             <p class="done-note" id="done-note"></p>
             <p class="lang-check hidden" id="lang-check"></p>
           </div>
           <div class="tabs">
-            <button class="tab is-active" data-view="txt">Text</button>
-            <button class="tab" data-view="srt">SRT</button>
+            <button class="tab is-active" data-view="txt" data-i18n="scribe.tab.text">Text</button>
+            <button class="tab" data-view="srt" data-i18n="scribe.tab.srt">SRT</button>
           </div>
         </div>
 
         <textarea class="transcript" id="transcript" spellcheck="false"></textarea>
 
         <div class="actions">
-          <button class="btn-primary" id="copy-btn">Copy</button>
-          <button class="btn-secondary" id="dl-txt">Download .txt</button>
-          <button class="btn-secondary" id="dl-srt">Download .srt</button>
+          <button class="btn-primary" id="copy-btn" data-i18n="scribe.copy">Copy</button>
+          <button class="btn-secondary" id="dl-txt" data-i18n="scribe.dl.txt">Download .txt</button>
+          <button class="btn-secondary" id="dl-srt" data-i18n="scribe.dl.srt">Download .srt</button>
         </div>
       </section>
 
       <!-- Desktop build. The browser holds all decoded audio in memory, so
            very long recordings need a different tool, not a bigger promise. -->
       <section class="panel" id="desktop">
-        <p class="section-label">Long recording?</p>
-        <h2 class="desktop-title">Get the desktop version.</h2>
-        <p class="desktop-lede">
+        <p class="section-label" data-i18n="scribe.desktop.label">Long recording?</p>
+        <h2 class="desktop-title" data-i18n="scribe.desktop.title">Get the desktop version.</h2>
+        <p class="desktop-lede" data-i18n="scribe.desktop.lede">
           This page keeps the whole recording in memory, so somewhere past an hour your
           browser may give up. The desktop version runs the same job as an ordinary
           program on your computer, with no length limit, no internet needed, and roughly
@@ -607,44 +611,38 @@
         </p>
 
         <div class="download-grid">
-          <a class="download" href="https://github.com/daniel-wing/transcribe/releases/latest/download/Transcribe-macOS-AppleSilicon.dmg">
+          <a class="download" href="https://github.com/daniel-wing/scribe/releases/latest/download/Scribe-macOS-AppleSilicon.dmg">
             <span class="download-os">macOS</span>
-            <span class="download-detail">Apple Silicon (M1 and newer)</span>
+            <span class="download-detail" data-i18n="scribe.desktop.macSilicon">Apple Silicon (M1 and newer)</span>
             <span class="download-cta">Download .dmg</span>
           </a>
-          <a class="download" href="https://github.com/daniel-wing/transcribe/releases/latest/download/Transcribe-macOS-Intel.dmg">
+          <a class="download" href="https://github.com/daniel-wing/scribe/releases/latest/download/Scribe-macOS-Intel.dmg">
             <span class="download-os">macOS</span>
-            <span class="download-detail">Intel processor</span>
+            <span class="download-detail" data-i18n="scribe.desktop.macIntel">Intel processor</span>
             <span class="download-cta">Download .dmg</span>
           </a>
-          <a class="download" href="https://github.com/daniel-wing/transcribe/releases/latest/download/Transcribe-Windows-x64.exe">
+          <a class="download" href="https://github.com/daniel-wing/scribe/releases/latest/download/Scribe-Windows-x64.exe">
             <span class="download-os">Windows</span>
-            <span class="download-detail">Windows 10 and 11, 64-bit</span>
+            <span class="download-detail" data-i18n="scribe.desktop.windows">Windows 10 and 11, 64-bit</span>
             <span class="download-cta">Download .exe</span>
           </a>
         </div>
 
-        <p class="hint">
+        <p class="hint" data-i18n="scribe.desktop.whichMac">
           Not sure which Mac you have? Apple menu, then About This Mac. If it mentions
           M1, M2, M3 or M4, take the Apple Silicon one.
         </p>
 
         <div class="trust">
+          <p data-i18n-html="scribe.desktop.warn"><strong>You will see a security warning, and you should know why.</strong> These downloads are not code-signed, because signing certificates cost money every year and this is free. So macOS and Windows will both tell you the developer is unverified. Nothing is wrong with the file, but please do not take that on trust from me.</p>
           <p>
-            <strong>You will see a security warning, and you should know why.</strong>
-            These downloads are not code-signed, because signing certificates cost money
-            every year and this is free. So macOS and Windows will both tell you the
-            developer is unverified. Nothing is wrong with the file, but please do not
-            take that on trust from me.
-          </p>
-          <p>
-            Read the code instead. Every line is on GitHub, and every download is built
+            <span data-i18n="scribe.desktop.trust">Read the code instead. Every line is on GitHub, and every download is built
             there in public from that source, so you can see exactly what went into the
-            file before you run it. The installation instructions are in the README.
+            file before you run it. The installation instructions are in the README.</span>
           </p>
-          <a class="btn-secondary" href="https://github.com/daniel-wing/transcribe" target="_blank" rel="noopener noreferrer">
+          <a class="btn-secondary" href="https://github.com/daniel-wing/scribe" target="_blank" rel="noopener noreferrer">
             <svg viewBox="0 0 24 24"><path d="M12 2A10 10 0 0 0 8.84 21.5c.5.08.66-.23.66-.5v-1.69C6.73 19.91 6.14 18 6.14 18A2.69 2.69 0 0 0 5 16.5c-.91-.62.07-.6.07-.6a2.1 2.1 0 0 1 1.53 1.03 2.15 2.15 0 0 0 2.91.83 2.16 2.16 0 0 1 .63-1.34c-2.14-.24-4.39-1.07-4.39-4.77a3.77 3.77 0 0 1 1-2.61 3.5 3.5 0 0 1 .1-2.58s.84-.27 2.75 1a9.63 9.63 0 0 1 5 0c1.91-1.29 2.75-1 2.75-1a3.5 3.5 0 0 1 .1 2.58 3.77 3.77 0 0 1 1 2.61c0 3.71-2.26 4.53-4.41 4.77a2.42 2.42 0 0 1 .69 1.87v2.77c0 .27.16.59.67.5A10 10 0 0 0 12 2z"/></svg>
-            Read the source on GitHub
+            <span data-i18n="scribe.desktop.source">Read the source on GitHub</span>
           </a>
         </div>
       </section>
@@ -656,11 +654,11 @@
     <span>© Daniel Wing</span>
     <a href="/ships">Ships</a>
     <a href="mailto:wing@wing.cx">wing@wing.cx</a>
-    <span>Powered by OpenAI Whisper via transformers.js</span>
+    <span data-i18n="footer.powered">Powered by OpenAI Whisper via transformers.js</span>
   </footer>
 
-  <!-- Absolute, not "./app.js": the page is served at /ships/transcribe with no
+  <!-- Absolute, not "./app.js": the page is served at /ships/scribe with no
        trailing slash, so a relative src would resolve to /ships/app.js. -->
-  <script type="module" src="/ships/transcribe/app.js"></script>
+  <script type="module" src="/ships/scribe/app.js"></script>
 </body>
 </html>

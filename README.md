@@ -9,9 +9,29 @@ Personal website of Daniel Wing — AI & Analytics for Customer Experience.
 A static site. No build step, no bundler, no framework — hand-written HTML with
 CSS, served as-is. Fonts come from Google Fonts.
 
-The homepage keeps its CSS inline. Everything under `/ships` shares
-`assets/site.css`, which holds the palette tokens and the pill/panel idiom. If
-the palette ever moves, update both.
+Every page loads `assets/site.css` for the shared shell, `assets/i18n.js` for
+the strings and `assets/site.js` for behaviour. The homepage additionally keeps
+its hero-specific CSS inline, and those inline rules win where they overlap, so
+the hero is unaffected by changes to the shared sheet.
+
+### Languages
+
+The site is English and Spanish. There is no build step and no duplicated
+pages: markup carries `data-i18n="key"` (or `data-i18n-html` for strings with
+markup in them), `assets/i18n.js` holds both dictionaries, and `assets/site.js`
+swaps them at runtime. Scripts translate with `wingT('key', { vars })`.
+
+The choice comes from `?lang=`, then localStorage, then the browser, then
+English. English is the fallback for any missing key, so a gap shows the
+original wording rather than an empty element or a raw key.
+
+Anything a script writes has to be redrawn when the language changes; listen
+for the `wing:languagechange` event. The Scribe page does this for its model
+labels, hints and advice.
+
+Language *names* are not in the dictionaries. `Intl.DisplayNames` already
+knows them in every locale and gets the casing convention right, so
+"detected English" becomes "idioma detectado: inglés" for free.
 
 ## Structure
 
@@ -19,10 +39,13 @@ the palette ever moves, update both.
 .
 ├── index.html              # homepage: markup + inline styles
 ├── assets/
-│   └── site.css            # shared shell for /ships (tokens, header, panels)
+│   ├── site.css            # shared shell (tokens, header, panels, toggle)
+│   ├── i18n.js             # every visible string, English and Spanish
+│   └── site.js             # pinned header, language switching
+├── vercel.json             # redirects /ships/transcribe to /ships/scribe
 ├── ships/
 │   ├── index.html          # index of shipped projects
-│   └── transcribe/         # Ships #1 — browser-side Whisper transcription
+│   └── scribe/             # Ships #1 — browser-side Whisper transcription
 │       ├── index.html      # markup + page styles
 │       ├── app.js          # UI, audio decoding, SRT export
 │       └── worker.js       # Whisper inference, off the main thread
@@ -61,7 +84,7 @@ Pushes to `main` deploy automatically.
 `ships/<name>/index.html`, link `/assets/site.css`, and add a card to
 `ships/index.html`.
 
-### Transcribe
+### Scribe
 
 Whisper runs in the visitor's browser via
 [transformers.js](https://github.com/huggingface/transformers.js) — no server,
@@ -98,13 +121,13 @@ detected language is always shown next to the result for that reason.
 #### Desktop version
 
 Long recordings are limited by browser memory, since the whole decoded audio is
-held as a Float32Array. For those, `/ships/transcribe` links to a downloadable
+held as a Float32Array. For those, `/ships/scribe` links to a downloadable
 desktop build, which lives in its own repository at
-[daniel-wing/transcribe](https://github.com/daniel-wing/transcribe). It uses
+[daniel-wing/scribe](https://github.com/daniel-wing/scribe). It uses
 faster-whisper rather than transformers.js, so it is far quicker and has no
 length limit. The download links point at that repository's latest release; if
 the asset filenames there ever change, update them in
-`ships/transcribe/index.html`.
+`ships/scribe/index.html`.
 
 #### Speed
 
