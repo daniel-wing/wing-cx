@@ -1,0 +1,20 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Google Drive sync artifacts
+.tmp.drivedownload/
+.tmp.driveupload/
+*.gdoc
+*.gsheet
+*.gslides
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# Vercel
+.vercel

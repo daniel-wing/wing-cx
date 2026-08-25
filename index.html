@@ -1,0 +1,394 @@
+<!-- Version: V1.0 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wing — wing.cx</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-top: #4a9ec8;
+      --bg-bottom: #3681ab;
+      --text-main: #ffffff;
+      --text-muted: rgba(255, 255, 255, 0.78);
+      --giant-title: rgba(255, 255, 255, 0.95);
+      --giant-subtitle: rgba(255, 255, 255, 0.75);
+      --pill-bg: rgba(0, 0, 0, 0.18);
+      --pill-border: rgba(255, 255, 255, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: radial-gradient(circle at 50% 35%, var(--bg-top) 0%, var(--bg-bottom) 100%);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Top Floating Capsule Nav */
+    header {
+      position: relative;
+      z-index: 20;
+      width: 100%;
+      padding: 1.75rem 2.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      font-weight: 700;
+      font-size: 1.35rem;
+      color: var(--text-main);
+      text-decoration: none;
+      letter-spacing: -0.03em;
+    }
+
+    /* Center Pill Bar */
+    .nav-pill-center {
+      display: flex; 
+      background: var(--pill-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--pill-border);
+      border-radius: 9999px;
+      padding: 4px 6px;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .nav-pill-wip {
+      position: relative;
+      background: #ffffff;
+      color: #1e293b;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 0.45rem 1.1rem;
+      border-radius: 9999px;
+      cursor: not-allowed;
+      user-select: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      min-width: 90px;
+      height: 32px;
+    }
+
+    .nav-pill-wip .nav-wip-default {
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .nav-pill-wip .nav-wip-hover {
+      position: absolute;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      color: #64748b;
+      font-size: 0.78rem;
+    }
+
+    .nav-pill-wip:hover .nav-wip-default {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+
+    .nav-pill-wip:hover .nav-wip-hover {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .nav-item {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 0.45rem 1.1rem;
+      border-radius: 9999px;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .nav-item:hover {
+      color: #ffffff;
+    }
+
+    .nav-item svg {
+      width: 14px;
+      height: 14px;
+      fill: currentColor;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .btn-sayhi {
+      background: var(--pill-bg);
+      border: 1px solid var(--pill-border);
+      color: var(--text-main);
+      padding: 0.5rem 1.1rem;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none;
+      backdrop-filter: blur(8px);
+      transition: all 0.2s ease;
+    }
+
+    .btn-sayhi:hover {
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    /* Hero Section */
+    .hero-container {
+      position: relative;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 0 3.5rem 4rem 3.5rem;
+      max-width: 1440px;
+      margin: 0 auto;
+      width: 100%;
+      min-height: 82vh;
+    }
+
+    /* Centered Subject / Character Container */
+    .subject-wrapper {
+      position: absolute;
+      top: 48%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      height: 85%;
+      max-height: 720px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    .subject-img {
+      max-height: 100%;
+      width: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.25));
+    }
+
+    /* Massive Typographic Backdrop */
+    .hero-content {
+      position: relative;
+      z-index: 3;
+      max-width: 1100px;
+    }
+
+    .giant-heading {
+      font-size: clamp(2.8rem, 6.2vw, 5.4rem);
+      font-weight: 800;
+      line-height: 1.02;
+      letter-spacing: -0.04em;
+      color: var(--giant-title);
+      margin-bottom: 1.8rem;
+    }
+
+    .giant-heading span.line-1 {
+      display: block;
+    }
+
+    .giant-heading span.subtitle-line {
+      display: block;
+      color: var(--giant-subtitle);
+      font-weight: 700;
+    }
+
+    .hero-bio {
+      font-size: 1.05rem;
+      line-height: 1.55;
+      color: var(--text-muted);
+      max-width: 520px;
+      font-weight: 400;
+      margin-bottom: 2rem;
+    }
+
+    /* Bottom Pill Buttons */
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    /* Disabled "Coming Soon" Pill */
+    .btn-disabled-wip {
+      position: relative;
+      background: rgba(255, 255, 255, 0.95);
+      color: #111827;
+      padding: 0.75rem 1.4rem;
+      border-radius: 9999px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: not-allowed;
+      user-select: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .btn-disabled-wip .text-default {
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .btn-disabled-wip .text-hover {
+      position: absolute;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      color: #6b7280;
+      font-size: 0.85rem;
+      letter-spacing: 0.02em;
+    }
+
+    .btn-disabled-wip:hover .text-default {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+
+    .btn-disabled-wip:hover .text-hover {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background: rgba(0, 0, 0, 0.16);
+      border: 1px solid var(--pill-border);
+      color: #ffffff;
+      padding: 0.75rem 1.4rem;
+      border-radius: 9999px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-decoration: none;
+      backdrop-filter: blur(8px);
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(0, 0, 0, 0.26);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .btn-secondary svg {
+      width: 15px;
+      height: 15px;
+      fill: currentColor;
+    }
+
+    @media (max-width: 900px) {
+      header {
+        padding: 1.25rem 1.5rem;
+      }
+      .nav-pill-center {
+        display: none;
+      }
+      .hero-container {
+        padding: 0 1.5rem 3rem 1.5rem;
+      }
+      .subject-wrapper {
+        position: relative;
+        top: auto;
+        left: auto;
+        transform: none;
+        height: 380px;
+        margin-bottom: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <header>
+    <a href="#" class="brand">Wing</a>
+
+    <!-- Center Navigation Capsule -->
+    <nav class="nav-pill-center">
+      <div class="nav-pill-wip" aria-disabled="true">
+        <span class="nav-wip-default">My work</span>
+        <span class="nav-wip-hover">WIP</span>
+      </div>
+      <a href="https://www.linkedin.com/in/daniel-wing" target="_blank" rel="noopener noreferrer" class="nav-item">
+        <svg viewBox="0 0 24 24">
+          <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76a1.65 1.65 0 1 0 0-3.3 1.65 1.65 0 0 0 0 3.3m1.39 9.74v-8.37H5.07v8.37h2.78z"/>
+        </svg>
+        LinkedIn
+      </a>
+    </nav>
+
+    <div class="nav-actions">
+      <a href="mailto:wing@wing.cx" class="btn-sayhi">Say Hi 👋</a>
+    </div>
+  </header>
+
+  <!-- Hero Stage -->
+  <main class="hero-container">
+
+    <!-- Center Subject Slot -->
+    <div class="subject-wrapper">
+      <!-- <img src="wing-cutout.png" alt="Daniel Wing" class="subject-img" /> -->
+    </div>
+
+    <!-- Massive Text Layout -->
+    <div class="hero-content">
+      <h1 class="giant-heading">
+        <span class="line-1">Daniel Wing</span>
+        <span class="subtitle-line">AI & Analytics for</span>
+        <span class="subtitle-line">Customer Experience</span>
+      </h1>
+
+      <p class="hero-bio">
+        Turning raw user complaints into clean data, and clean data into AI that actually solves the problem.
+      </p>
+
+      <div class="hero-actions">
+        <div class="btn-disabled-wip" aria-disabled="true">
+          <span class="text-default">View my work <span>↓</span></span>
+          <span class="text-hover">Coming Soon (WIP)</span>
+        </div>
+        <a href="https://www.linkedin.com/in/daniel-wing" target="_blank" rel="noopener noreferrer" class="btn-secondary">
+          <svg viewBox="0 0 24 24">
+            <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76a1.65 1.65 0 1 0 0-3.3 1.65 1.65 0 0 0 0 3.3m1.39 9.74v-8.37H5.07v8.37h2.78z"/>
+          </svg>
+          LinkedIn
+        </a>
+      </div>
+    </div>
+  </main>
+
+</body>
+</html>
