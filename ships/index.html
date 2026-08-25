@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ships — wing.cx</title>
+  <meta name="description" content="Small, free tools Daniel Wing has built and shipped. No sign-ups, no accounts, no cost." />
+  <link rel="canonical" href="https://wing.cx/ships" />
+  <meta name="theme-color" content="#3681ab" />
+
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="wing.cx" />
+  <meta property="og:url" content="https://wing.cx/ships" />
+  <meta property="og:title" content="Ships — things I've built and put out there" />
+  <meta property="og:description" content="Small, free tools Daniel Wing has built and shipped. No sign-ups, no accounts, no cost." />
+  <meta property="og:image" content="https://wing.cx/og-image.jpg" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/site.css">
+
+  <style>
+    .ships-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .ship-card {
+      background: var(--panel-bg);
+      border: 1px solid var(--pill-border);
+      border-radius: var(--radius-panel);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 1.6rem;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+      transition: all 0.2s ease;
+    }
+
+    a.ship-card:hover {
+      transform: translateY(-3px);
+      background: var(--pill-bg-hover);
+      border-color: var(--border-strong);
+    }
+
+    .ship-card.is-empty {
+      border-style: dashed;
+      background: var(--panel-bg-soft);
+      cursor: default;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      min-height: 180px;
+      color: var(--text-faint);
+    }
+
+    .ship-status {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ok);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .ship-status::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--ok);
+    }
+
+    .ship-name {
+      font-size: 1.45rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+    }
+
+    .ship-desc {
+      font-size: 0.92rem;
+      line-height: 1.5;
+      color: var(--text-muted);
+      flex-grow: 1;
+    }
+
+    .ship-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.3rem;
+    }
+
+    .tag {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--pill-border);
+      padding: 0.25rem 0.7rem;
+      border-radius: var(--radius-pill);
+    }
+
+    .ship-open {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #ffffff;
+      margin-top: 0.5rem;
+    }
+
+    a.ship-card:hover .ship-open .arrow {
+      display: inline-block;
+      transform: translateX(3px);
+    }
+
+    .ship-open .arrow { transition: transform 0.2s ease; }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <a href="/" class="brand">Wing</a>
+
+    <nav class="nav-pill-center">
+      <a href="/ships" class="nav-item is-active">Ships</a>
+      <a href="https://www.linkedin.com/in/daniel-wing" target="_blank" rel="noopener noreferrer" class="nav-item">
+        <svg viewBox="0 0 24 24">
+          <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76a1.65 1.65 0 1 0 0-3.3 1.65 1.65 0 0 0 0 3.3m1.39 9.74v-8.37H5.07v8.37h2.78z"/>
+        </svg>
+        LinkedIn
+      </a>
+    </nav>
+
+    <div class="nav-actions">
+      <a href="mailto:wing@wing.cx" class="btn-sayhi">Say Hi 👋</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <p class="breadcrumb"><a href="/">Wing</a> <span>/</span> <span>Ships</span></p>
+
+    <h1 class="page-title">Ships.</h1>
+    <p class="page-lede">
+      Things I've built and actually put out there. All free, no sign-up, no account —
+      just open the page and use it.
+    </p>
+
+    <div class="ships-grid">
+
+      <a href="/ships/transcribe" class="ship-card">
+        <span class="ship-status">Live</span>
+        <h2 class="ship-name">Transcribe</h2>
+        <p class="ship-desc">
+          Drop in a video or audio file and get a clean transcript plus subtitles.
+          Whisper runs inside your own browser, so the file never leaves your machine
+          and there's nothing to pay for.
+        </p>
+        <div class="ship-tags">
+          <span class="tag">Whisper</span>
+          <span class="tag">WebGPU</span>
+          <span class="tag">Private</span>
+        </div>
+        <p class="ship-open">Open <span class="arrow">→</span></p>
+      </a>
+
+      <div class="ship-card is-empty">
+        <p>More on the way</p>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <span>© Daniel Wing</span>
+    <a href="/">wing.cx</a>
+    <a href="mailto:wing@wing.cx">wing@wing.cx</a>
+  </footer>
+
+</body>
+</html>

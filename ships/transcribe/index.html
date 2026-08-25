@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Transcribe — wing.cx</title>
+  <meta name="description" content="Free browser-based video and audio transcription. Whisper runs locally on your own machine — your file is never uploaded. Export as TXT or SRT subtitles." />
+  <link rel="canonical" href="https://wing.cx/ships/transcribe" />
+  <meta name="theme-color" content="#3681ab" />
+
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="wing.cx" />
+  <meta property="og:url" content="https://wing.cx/ships/transcribe" />
+  <meta property="og:title" content="Transcribe — free, private, in your browser" />
+  <meta property="og:description" content="Drop in a video or audio file and get a transcript plus SRT subtitles. Whisper runs locally in your browser — nothing is uploaded." />
+  <meta property="og:image" content="https://wing.cx/og-image.jpg" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://huggingface.co" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/site.css">
+
+  <style>
+    .stack { display: flex; flex-direction: column; gap: 1.25rem; }
+
+    /* ---------- Privacy badge ---------- */
+
+    .privacy-note {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      background: var(--pill-bg);
+      border: 1px solid var(--pill-border);
+      border-radius: var(--radius-pill);
+      padding: 0.5rem 1.1rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 2.25rem;
+      backdrop-filter: blur(8px);
+    }
+
+    .privacy-note svg { width: 14px; height: 14px; fill: var(--ok); flex-shrink: 0; }
+
+    /* ---------- Settings row ---------- */
+
+    .settings {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+      align-items: flex-end;
+    }
+
+    .field { display: flex; flex-direction: column; gap: 0.45rem; flex: 1 1 190px; }
+
+    .field label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+    }
+
+    .field select {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 100%;
+      background-color: rgba(0, 0, 0, 0.24);
+      background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.95rem center;
+      background-size: 13px;
+      border: 1px solid var(--pill-border);
+      border-radius: var(--radius-pill);
+      color: #ffffff;
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 600;
+      padding: 0.65rem 2.4rem 0.65rem 1.1rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .field select:hover:not(:disabled) { border-color: var(--border-strong); }
+    .field select:disabled { opacity: 0.45; cursor: not-allowed; }
+    .field select option { background: #2c6d92; color: #ffffff; }
+
+    .runtime-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      background: rgba(0, 0, 0, 0.24);
+      border: 1px solid var(--pill-border);
+      border-radius: var(--radius-pill);
+      padding: 0.65rem 1.1rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .runtime-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--warn);
+      flex-shrink: 0;
+    }
+
+    .runtime-badge.is-fast .runtime-dot { background: var(--ok); }
+
+    .hint {
+      font-size: 0.78rem;
+      line-height: 1.45;
+      color: var(--text-faint);
+      margin-top: 0.9rem;
+    }
+
+    /* ---------- Drop zone ---------- */
+
+    .dropzone {
+      border: 1px dashed rgba(255, 255, 255, 0.28);
+      border-radius: var(--radius-panel);
+      background: var(--panel-bg-soft);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 3rem 1.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .dropzone:hover,
+    .dropzone.is-over {
+      background: var(--pill-bg-hover);
+      border-color: rgba(255, 255, 255, 0.6);
+    }
+
+    .dropzone.is-over { transform: scale(1.005); }
+
+    .dropzone-icon { width: 34px; height: 34px; fill: rgba(255, 255, 255, 0.65); margin-bottom: 0.9rem; }
+
+    .dropzone-title { font-size: 1.05rem; font-weight: 600; margin-bottom: 0.4rem; }
+    .dropzone-sub { font-size: 0.85rem; color: var(--text-faint); }
+
+    /* ---------- File card ---------- */
+
+    .file-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1.1rem;
+    }
+
+    .file-name {
+      font-size: 1rem;
+      font-weight: 600;
+      word-break: break-word;
+      line-height: 1.35;
+    }
+
+    .file-meta { font-size: 0.8rem; color: var(--text-faint); margin-top: 0.25rem; }
+
+    .btn-icon {
+      background: transparent;
+      border: 1px solid var(--pill-border);
+      color: var(--text-muted);
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      flex-shrink: 0;
+      cursor: pointer;
+      font-size: 1rem;
+      line-height: 1;
+      font-family: inherit;
+      transition: all 0.2s ease;
+    }
+
+    .btn-icon:hover { background: var(--pill-bg-hover); color: #ffffff; }
+
+    .media-preview {
+      width: 100%;
+      max-height: 340px;
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.35);
+      display: block;
+      margin-bottom: 1.25rem;
+    }
+
+    audio.media-preview { max-height: none; }
+
+    .actions { display: flex; flex-wrap: wrap; gap: 0.7rem; align-items: center; }
+
+    /* ---------- Progress ---------- */
+
+    .progress-wrap { margin-top: 1.25rem; }
+
+    .progress-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 0.6rem;
+    }
+
+    .progress-track {
+      height: 5px;
+      background: rgba(0, 0, 0, 0.28);
+      border-radius: var(--radius-pill);
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: #ffffff;
+      border-radius: var(--radius-pill);
+      transition: width 0.25s ease;
+    }
+
+    /* Indeterminate: transcription gives no reliable percentage, so don't fake one. */
+    .progress-track.is-indeterminate .progress-bar {
+      width: 35%;
+      transition: none;
+      animation: slide 1.4s ease-in-out infinite;
+    }
+
+    @keyframes slide {
+      0%   { transform: translateX(-100%); }
+      100% { transform: translateX(340%); }
+    }
+
+    /* ---------- Messages ---------- */
+
+    .message {
+      border-radius: 12px;
+      padding: 0.9rem 1.1rem;
+      font-size: 0.86rem;
+      line-height: 1.5;
+      border: 1px solid var(--pill-border);
+      background: rgba(0, 0, 0, 0.22);
+    }
+
+    .message.is-error { border-color: rgba(252, 165, 165, 0.45); color: #ffe4e4; }
+    .message strong { font-weight: 700; }
+
+    /* ---------- Output ---------- */
+
+    .output-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+
+    .done-note { font-size: 0.82rem; font-weight: 600; color: var(--ok); }
+
+    .tabs { display: flex; gap: 4px; background: var(--pill-bg); border: 1px solid var(--pill-border); border-radius: var(--radius-pill); padding: 4px; }
+
+    .tab {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.35rem 0.95rem;
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tab:hover { color: #ffffff; }
+    .tab.is-active { background: #ffffff; color: #1e293b; }
+
+    .transcript {
+      width: 100%;
+      min-height: 260px;
+      resize: vertical;
+      background: rgba(0, 0, 0, 0.28);
+      border: 1px solid var(--pill-border);
+      border-radius: 12px;
+      color: rgba(255, 255, 255, 0.92);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.84rem;
+      line-height: 1.65;
+      padding: 1.1rem;
+      margin-bottom: 1.1rem;
+      white-space: pre-wrap;
+    }
+
+    .transcript:focus { outline: none; border-color: var(--border-strong); }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 900px) {
+      .settings { gap: 1rem; }
+      .field { flex: 1 1 100%; }
+      .runtime-badge { width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <a href="/" class="brand">Wing</a>
+
+    <nav class="nav-pill-center">
+      <a href="/ships" class="nav-item is-active">Ships</a>
+      <a href="https://www.linkedin.com/in/daniel-wing" target="_blank" rel="noopener noreferrer" class="nav-item">
+        <svg viewBox="0 0 24 24">
+          <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76a1.65 1.65 0 1 0 0-3.3 1.65 1.65 0 0 0 0 3.3m1.39 9.74v-8.37H5.07v8.37h2.78z"/>
+        </svg>
+        LinkedIn
+      </a>
+    </nav>
+
+    <div class="nav-actions">
+      <a href="mailto:wing@wing.cx" class="btn-sayhi">Say Hi 👋</a>
+    </div>
+  </header>
+
+  <main class="page">
+    <p class="breadcrumb"><a href="/">Wing</a> <span>/</span> <a href="/ships">Ships</a> <span>/</span> <span>Transcribe</span></p>
+
+    <h1 class="page-title">Transcribe.</h1>
+    <p class="page-lede">
+      Drop in a video or audio file and get a clean transcript plus subtitles.
+      Free, no sign-up, no limits.
+    </p>
+
+    <p class="privacy-note">
+      <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+      Everything runs inside your browser. Your file is never uploaded anywhere.
+    </p>
+
+    <div class="stack">
+
+      <!-- Settings -->
+      <section class="panel">
+        <p class="section-label">Engine</p>
+        <div class="settings">
+          <div class="field">
+            <label for="model">Model</label>
+            <select id="model">
+              <option value="onnx-community/whisper-tiny">Tiny — fastest, roughest (~40 MB)</option>
+              <option value="onnx-community/whisper-base" selected>Base — balanced (~80 MB)</option>
+              <option value="onnx-community/whisper-small">Small — most accurate, slowest (~250 MB)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="language">Language</label>
+            <select id="language">
+              <option value="en">English</option>
+              <option value="es">Spanish — Español</option>
+              <option value="pt">Portuguese — Português</option>
+              <option value="fr">French — Français</option>
+              <option value="de">German — Deutsch</option>
+              <option value="it">Italian — Italiano</option>
+              <option value="ca">Catalan — Català</option>
+              <option value="gl">Galician — Galego</option>
+              <option value="nl">Dutch — Nederlands</option>
+              <option value="pl">Polish — Polski</option>
+              <option value="ro">Romanian — Română</option>
+              <option value="cs">Czech — Čeština</option>
+              <option value="sv">Swedish — Svenska</option>
+              <option value="da">Danish — Dansk</option>
+              <option value="no">Norwegian — Norsk</option>
+              <option value="fi">Finnish — Suomi</option>
+              <option value="el">Greek — Ελληνικά</option>
+              <option value="ru">Russian — Русский</option>
+              <option value="uk">Ukrainian — Українська</option>
+              <option value="tr">Turkish — Türkçe</option>
+              <option value="ar">Arabic — العربية</option>
+              <option value="he">Hebrew — עברית</option>
+              <option value="hi">Hindi — हिन्दी</option>
+              <option value="id">Indonesian — Indonesia</option>
+              <option value="vi">Vietnamese — Tiếng Việt</option>
+              <option value="th">Thai — ไทย</option>
+              <option value="zh">Chinese — 中文</option>
+              <option value="ja">Japanese — 日本語</option>
+              <option value="ko">Korean — 한국어</option>
+            </select>
+          </div>
+          <div class="field" style="flex: 0 0 auto;">
+            <label>Runtime</label>
+            <span class="runtime-badge" id="runtime-badge">
+              <span class="runtime-dot"></span>
+              <span id="runtime-text">Checking…</span>
+            </span>
+          </div>
+        </div>
+        <p class="hint" id="engine-hint">
+          The model downloads once, then your browser caches it — later visits start instantly.
+        </p>
+        <p class="hint">
+          Pick the language actually spoken in the file. Whisper's automatic detection is
+          unreliable here — it tends to guess English and quietly <em>translate</em> instead
+          of transcribing, so this asks you rather than getting it silently wrong.
+        </p>
+      </section>
+
+      <!-- Drop zone -->
+      <section id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="Choose a video or audio file">
+        <svg class="dropzone-icon" viewBox="0 0 24 24"><path d="M19.35 10.04A7.49 7.49 0 0 0 12 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 0 0 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
+        <p class="dropzone-title">Drop a video or audio file</p>
+        <p class="dropzone-sub">or click to browse — MP4, MOV, M4V, WebM, MP3, M4A, WAV</p>
+        <input type="file" id="file-input" class="hidden" accept="video/*,audio/*" />
+      </section>
+
+      <!-- Loaded file -->
+      <section class="panel hidden" id="file-panel">
+        <div class="file-head">
+          <div>
+            <p class="file-name" id="file-name"></p>
+            <p class="file-meta" id="file-meta"></p>
+          </div>
+          <button class="btn-icon" id="clear-file" title="Remove file" aria-label="Remove file">✕</button>
+        </div>
+
+        <video id="video-preview" class="media-preview hidden" controls preload="metadata"></video>
+        <audio id="audio-preview" class="media-preview hidden" controls preload="metadata"></audio>
+
+        <div class="actions">
+          <button class="btn-primary" id="run-btn">Generate transcript</button>
+          <button class="btn-secondary hidden" id="cancel-btn">Cancel</button>
+        </div>
+
+        <div class="progress-wrap hidden" id="progress-wrap">
+          <div class="progress-line">
+            <span id="progress-label">Working…</span>
+            <span id="progress-pct"></span>
+          </div>
+          <div class="progress-track" id="progress-track">
+            <div class="progress-bar" id="progress-bar"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Errors -->
+      <div class="message is-error hidden" id="error-box"></div>
+
+      <!-- Output -->
+      <section class="panel hidden" id="output-panel">
+        <div class="output-head">
+          <div>
+            <p class="section-label" style="margin-bottom: 0.35rem;">Transcript</p>
+            <p class="done-note" id="done-note"></p>
+          </div>
+          <div class="tabs">
+            <button class="tab is-active" data-view="txt">Text</button>
+            <button class="tab" data-view="srt">SRT</button>
+          </div>
+        </div>
+
+        <textarea class="transcript" id="transcript" spellcheck="false"></textarea>
+
+        <div class="actions">
+          <button class="btn-primary" id="copy-btn">Copy</button>
+          <button class="btn-secondary" id="dl-txt">Download .txt</button>
+          <button class="btn-secondary" id="dl-srt">Download .srt</button>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <span>© Daniel Wing</span>
+    <a href="/ships">Ships</a>
+    <a href="mailto:wing@wing.cx">wing@wing.cx</a>
+    <span>Powered by OpenAI Whisper via transformers.js</span>
+  </footer>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-<!-- Version: V1.1 -->
+<!-- Version: V1.2 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -96,45 +96,23 @@
       gap: 4px;
     }
 
-    .nav-pill-wip {
-      position: relative;
+    /* Ships — the one solid pill in the nav capsule. */
+    .nav-ships {
       background: #ffffff;
       color: #1e293b;
       font-size: 0.85rem;
       font-weight: 600;
       padding: 0.45rem 1.1rem;
       border-radius: 9999px;
-      cursor: not-allowed;
-      user-select: none;
+      text-decoration: none;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      overflow: hidden;
-      min-width: 90px;
-      height: 32px;
+      transition: all 0.2s ease;
     }
 
-    .nav-pill-wip .nav-wip-default {
-      transition: opacity 0.2s ease, transform 0.2s ease;
-    }
-
-    .nav-pill-wip .nav-wip-hover {
-      position: absolute;
-      opacity: 0;
-      transform: translateY(4px);
-      transition: opacity 0.2s ease, transform 0.2s ease;
-      color: #64748b;
-      font-size: 0.78rem;
-    }
-
-    .nav-pill-wip:hover .nav-wip-default {
-      opacity: 0;
-      transform: translateY(-4px);
-    }
-
-    .nav-pill-wip:hover .nav-wip-hover {
-      opacity: 1;
-      transform: translateY(0);
+    .nav-ships:hover {
+      background: rgba(255, 255, 255, 0.86);
     }
 
     .nav-item {
@@ -261,48 +239,33 @@
       gap: 0.75rem;
     }
 
-    /* Disabled "Coming Soon" Pill */
-    .btn-disabled-wip {
-      position: relative;
+    /* Primary hero CTA */
+    .btn-hero-primary {
       background: rgba(255, 255, 255, 0.95);
       color: #111827;
       padding: 0.75rem 1.4rem;
       border-radius: 9999px;
       font-weight: 600;
       font-size: 0.9rem;
-      cursor: not-allowed;
-      user-select: none;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
-
-    .btn-disabled-wip .text-default {
-      transition: opacity 0.2s ease, transform 0.2s ease;
+      text-decoration: none;
       display: inline-flex;
       align-items: center;
       gap: 0.4rem;
+      transition: all 0.2s ease;
     }
 
-    .btn-disabled-wip .text-hover {
-      position: absolute;
-      opacity: 0;
-      transform: translateY(6px);
-      transition: opacity 0.2s ease, transform 0.2s ease;
-      color: #6b7280;
-      font-size: 0.85rem;
-      letter-spacing: 0.02em;
+    .btn-hero-primary:hover {
+      background: #ffffff;
+      transform: translateY(-1px);
     }
 
-    .btn-disabled-wip:hover .text-default {
-      opacity: 0;
-      transform: translateY(-6px);
+    .btn-hero-primary .arrow {
+      display: inline-block;
+      transition: transform 0.2s ease;
     }
 
-    .btn-disabled-wip:hover .text-hover {
-      opacity: 1;
-      transform: translateY(0);
+    .btn-hero-primary:hover .arrow {
+      transform: translateX(3px);
     }
 
     .btn-secondary {
@@ -368,10 +331,7 @@
 
     <!-- Center Navigation Capsule -->
     <nav class="nav-pill-center">
-      <div class="nav-pill-wip" aria-disabled="true">
-        <span class="nav-wip-default">My work</span>
-        <span class="nav-wip-hover">WIP</span>
-      </div>
+      <a href="/ships" class="nav-ships">Ships</a>
       <a href="https://www.linkedin.com/in/daniel-wing" target="_blank" rel="noopener noreferrer" class="nav-item">
         <svg viewBox="0 0 24 24">
           <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76a1.65 1.65 0 1 0 0-3.3 1.65 1.65 0 0 0 0 3.3m1.39 9.74v-8.37H5.07v8.37h2.78z"/>
@@ -406,10 +366,7 @@
       </p>
 
       <div class="hero-actions">
-        <div class="btn-disabled-wip" aria-disabled="true">
-          <span class="text-default">View my work <span>↓</span></span>
-          <span class="text-hover">Coming Soon (WIP)</span>
-        </div>
+        <a href="/ships" class="btn-hero-primary">View my ships <span class="arrow">→</span></a>
         <a href="https://www.linkedin.com/in/daniel-wing" target="_blank" rel="noopener noreferrer" class="btn-secondary">
           <svg viewBox="0 0 24 24">
             <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76a1.65 1.65 0 1 0 0-3.3 1.65 1.65 0 0 0 0 3.3m1.39 9.74v-8.37H5.07v8.37h2.78z"/>
