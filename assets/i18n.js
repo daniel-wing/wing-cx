@@ -6,8 +6,9 @@ window.WING_STRINGS = {
   en: {
     /* ---- shell ---- */
     'nav.ships': 'Ships',
+    'nav.signals': 'Signals',
     'nav.linkedin': 'LinkedIn',
-    'nav.sayhi': 'Say Hi',
+    'nav.sayhi': 'Say hi',
     'lang.label': 'Language',
 
     /* ---- home ---- */
@@ -15,7 +16,7 @@ window.WING_STRINGS = {
     'home.h1.name': 'Daniel Wing',
     'home.h1.line2': 'AI & Analytics for',
     'home.h1.line3': 'Customer Experience',
-    'home.bio': 'Turning raw user complaints into clean data, and clean data into AI that actually solves the problem.',
+    'home.bio': 'Turning raw user feedback into clean data, and clean data into AI solutions that stick.',
     'home.cta.ships': 'View my ships',
 
     /* ---- ships index ---- */
@@ -30,6 +31,13 @@ window.WING_STRINGS = {
     'ships.scribe.tag3': 'Private',
     'ships.open': 'Open',
     'ships.more': 'More on the way',
+
+    /* ---- signals index ---- */
+    'signals.title': 'Signals — wing.cx',
+    'signals.h1': 'Signals.',
+    'signals.lede': "Data stories: what the numbers turned out to be saying once someone actually looked. Charts, write-ups, and the occasional uncomfortable finding.",
+    'signals.more': 'First one in the works',
+    'signals.crumb': 'Signals',
 
     /* ---- scribe: header ---- */
     'scribe.title': 'Scribe — wing.cx',
@@ -134,6 +142,7 @@ window.WING_STRINGS = {
   es: {
     /* ---- shell ---- */
     'nav.ships': 'Proyectos',
+    'nav.signals': 'Señales',
     'nav.linkedin': 'LinkedIn',
     'nav.sayhi': 'Saluda',
     'lang.label': 'Idioma',
@@ -143,13 +152,20 @@ window.WING_STRINGS = {
     'home.h1.name': 'Daniel Wing',
     'home.h1.line2': 'IA y Analítica para',
     'home.h1.line3': 'Experiencia de Cliente',
-    'home.bio': 'Convierto quejas de usuarios en datos limpios, y datos limpios en IA que de verdad resuelve el problema.',
+    'home.bio': 'Convierto comentarios de usuarios en datos limpios, y datos limpios en soluciones de IA que perduran.',
     'home.cta.ships': 'Ver mis proyectos',
 
     /* ---- ships index ---- */
     'ships.title': 'Proyectos — wing.cx',
     'ships.h1': 'Proyectos.',
     'ships.lede': 'Cosas que he construido y he puesto a disposición de todos. Gratis, sin registro y sin cuenta: abre la página y úsala.',
+
+    /* ---- signals index ---- */
+    'signals.title': 'Señales — wing.cx',
+    'signals.h1': 'Señales.',
+    'signals.lede': 'Historias con datos: lo que resultó que decían los números cuando alguien se puso a mirarlos de verdad. Gráficos, análisis y algún que otro hallazgo incómodo.',
+    'signals.more': 'La primera, en camino',
+    'signals.crumb': 'Señales',
     'ships.status.live': 'En línea',
     'ships.scribe.name': 'Scribe',
     'ships.scribe.desc': 'Suelta un archivo de vídeo o audio y obtén una transcripción limpia junto con los subtítulos. Whisper se ejecuta dentro de tu propio navegador, así que el archivo nunca sale de tu equipo y no hay nada que pagar.',

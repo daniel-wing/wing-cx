@@ -39,16 +39,18 @@ knows them in every locale and gets the casing convention right, so
 .
 ├── index.html              # homepage: markup + inline styles
 ├── assets/
-│   ├── site.css            # shared shell (tokens, header, panels, toggle)
+│   ├── site.css            # shared shell (tokens, header, cards, toggle)
 │   ├── i18n.js             # every visible string, English and Spanish
 │   └── site.js             # pinned header, language switching
 ├── vercel.json             # redirects /ships/transcribe to /ships/scribe
-├── ships/
+├── ships/                  # tools and products — things built and released
 │   ├── index.html          # index of shipped projects
 │   └── scribe/             # Ships #1 — browser-side Whisper transcription
 │       ├── index.html      # markup + page styles
 │       ├── app.js          # UI, audio decoding, SRT export
 │       └── worker.js       # Whisper inference, off the main thread
+├── signals/                # data storytelling — write-ups, not tools
+│   └── index.html          # index of published data stories
 ├── og-image.jpg            # 1200x630 social share card
 ├── favicon.svg             # primary icon (scales to any size)
 ├── favicon-32.png          # raster fallback

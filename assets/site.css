@@ -135,9 +135,48 @@ a { color: inherit; }
   backdrop-filter: blur(8px);
   transition: all 0.2s ease;
   white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 36px;
 }
 
 .btn-sayhi:hover { background: rgba(255, 255, 255, 0.12); }
+
+.btn-sayhi svg {
+  width: 15px;
+  height: 15px;
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
+/* Icon-only header action (LinkedIn). Same pill treatment as .btn-sayhi but
+   square, so the label-less link still reads as part of the same set.
+   Sized to match .btn-sayhi's rendered height. */
+.btn-icon {
+  background: var(--pill-bg);
+  border: 1px solid var(--pill-border);
+  color: var(--text-main);
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-pill);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.btn-icon:hover { background: rgba(255, 255, 255, 0.12); }
+
+.btn-icon svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
 
 /* ---------- Language toggle ---------- */
 
@@ -333,6 +372,7 @@ a { color: inherit; }
 
   .brand { font-size: 1.15rem; }
   .btn-sayhi { padding: 0.45rem 0.8rem; font-size: 0.8rem; }
+  .nav-actions { gap: 0.5rem; }
   .page { padding: 0.5rem 1.25rem 4rem 1.25rem; }
   .site-footer { padding: 0 1.25rem 2.5rem 1.25rem; }
   .panel { padding: 1.15rem; }
@@ -342,9 +382,148 @@ a { color: inherit; }
    Navigation and the language switch keep their labels; the two links that
    also exist elsewhere on the page shrink to their icons. */
 @media (max-width: 620px) {
+  /* Brand, nav, language toggle and two icon actions cannot share one row
+     at this width - and the nav labels are translated, so English fitting
+     proves nothing ("Ships/Signals" vs "Proyectos/Senales"). Rather than
+     shave until the longest language breaks, drop the nav pill onto its own
+     centred row and let both languages have the space they need. */
+  .site-header {
+    padding: 1rem 0.9rem;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    row-gap: 0.65rem;
+  }
+  .brand { font-size: 1.05rem; }
+
+  .nav-pill-center {
+    order: 3;
+    flex-basis: 100%;
+    justify-content: center;
+    padding: 3px 4px;
+    gap: 2px;
+  }
+  .nav-item { padding: 0.4rem 0.9rem; font-size: 0.8rem; }
   .nav-item > span { display: none; }
   .nav-item svg { width: 16px; height: 16px; }
+
   .sayhi-text { display: none; }
-  .btn-sayhi { padding: 0.45rem 0.7rem; }
-  .lang-opt { padding: 0.3rem 0.55rem; font-size: 0.72rem; }
+  .btn-sayhi {
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    min-height: 0;
+    justify-content: center;
+  }
+  .btn-icon { width: 32px; height: 32px; }
+  .btn-sayhi svg,
+  .btn-icon svg { width: 15px; height: 15px; }
+
+  .lang-opt { padding: 0.28rem 0.45rem; font-size: 0.7rem; }
+  .nav-actions { gap: 0.35rem; }
 }
+
+/* ---------- Cards ----------
+   The grid used by /ships and /signals. Same idiom either way: a status dot,
+   a name, a description, optional tags, and an "open" affordance. Kept here
+   rather than inline on each page so the two sections cannot drift apart. */
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.25rem;
+}
+
+.card {
+  background: var(--panel-bg);
+  border: 1px solid var(--pill-border);
+  border-radius: var(--radius-panel);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 1.6rem;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  transition: all 0.2s ease;
+}
+
+a.card:hover {
+  transform: translateY(-3px);
+  background: var(--pill-bg-hover);
+  border-color: var(--border-strong);
+}
+
+.card.is-empty {
+  border-style: dashed;
+  background: var(--panel-bg-soft);
+  cursor: default;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: 180px;
+  color: var(--text-faint);
+}
+
+.card-status {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ok);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.card-status::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ok);
+}
+
+.card-name {
+  font-size: 1.45rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.card-desc {
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+  flex-grow: 1;
+}
+
+.card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.3rem;
+}
+
+.tag {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--pill-border);
+  padding: 0.25rem 0.7rem;
+  border-radius: var(--radius-pill);
+}
+
+.card-open {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin-top: 0.5rem;
+}
+
+a.card:hover .card-open .arrow {
+  display: inline-block;
+  transform: translateX(3px);
+}
+
+.card-open .arrow { transition: transform 0.2s ease; }

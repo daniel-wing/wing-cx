@@ -1,11 +1,11 @@
-<!-- Version: V1.3 -->
+<!-- Version: V1.4 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Wing — wing.cx</title>
-  <meta name="description" content="Daniel Wing turns raw user complaints into clean data, and clean data into AI that actually solves the problem. AI & analytics for customer experience." />
+  <meta name="description" content="Daniel Wing turns raw user feedback into clean data, and clean data into AI solutions that stick. AI & analytics for customer experience." />
   <link rel="canonical" href="https://wing.cx/" />
   <link rel="alternate" hreflang="en" href="https://wing.cx/?lang=en" />
   <link rel="alternate" hreflang="es" href="https://wing.cx/?lang=es" />
@@ -19,7 +19,7 @@
   <meta property="og:site_name" content="wing.cx" />
   <meta property="og:url" content="https://wing.cx/" />
   <meta property="og:title" content="Daniel Wing — AI & Analytics for Customer Experience" />
-  <meta property="og:description" content="Daniel Wing turns raw user complaints into clean data, and clean data into AI that actually solves the problem. AI & analytics for customer experience." />
+  <meta property="og:description" content="Daniel Wing turns raw user feedback into clean data, and clean data into AI solutions that stick. AI & analytics for customer experience." />
   <meta property="og:image" content="https://wing.cx/og-image.jpg" />
   <meta property="og:image:type" content="image/jpeg" />
   <meta property="og:image:width" content="1200" />
@@ -28,7 +28,7 @@
 
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Daniel Wing — AI & Analytics for Customer Experience" />
-  <meta name="twitter:description" content="Daniel Wing turns raw user complaints into clean data, and clean data into AI that actually solves the problem. AI & analytics for customer experience." />
+  <meta name="twitter:description" content="Daniel Wing turns raw user feedback into clean data, and clean data into AI solutions that stick. AI & analytics for customer experience." />
   <meta name="twitter:image" content="https://wing.cx/og-image.jpg" />
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -68,103 +68,6 @@
       justify-content: space-between;
       position: relative;
       -webkit-font-smoothing: antialiased;
-    }
-
-    /* Top Floating Capsule Nav */
-    header {
-      position: relative;
-      z-index: 20;
-      width: 100%;
-      padding: 1.75rem 2.5rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .brand {
-      font-weight: 700;
-      font-size: 1.35rem;
-      color: var(--text-main);
-      text-decoration: none;
-      letter-spacing: -0.03em;
-    }
-
-    /* Center Pill Bar */
-    .nav-pill-center {
-      display: flex; 
-      background: var(--pill-bg);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid var(--pill-border);
-      border-radius: 9999px;
-      padding: 4px 6px;
-      align-items: center;
-      gap: 4px;
-    }
-
-    /* Ships — the one solid pill in the nav capsule. */
-    .nav-ships {
-      background: #ffffff;
-      color: #1e293b;
-      font-size: 0.85rem;
-      font-weight: 600;
-      padding: 0.45rem 1.1rem;
-      border-radius: 9999px;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s ease;
-    }
-
-    .nav-ships:hover {
-      background: rgba(255, 255, 255, 0.86);
-    }
-
-    .nav-item {
-      color: var(--text-muted);
-      text-decoration: none;
-      font-size: 0.85rem;
-      font-weight: 600;
-      padding: 0.45rem 1.1rem;
-      border-radius: 9999px;
-      transition: all 0.2s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-    }
-
-    .nav-item:hover {
-      color: #ffffff;
-    }
-
-    .nav-item svg {
-      width: 14px;
-      height: 14px;
-      fill: currentColor;
-    }
-
-    .nav-actions {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .btn-sayhi {
-      background: var(--pill-bg);
-      border: 1px solid var(--pill-border);
-      color: var(--text-main);
-      padding: 0.5rem 1.1rem;
-      border-radius: 9999px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      text-decoration: none;
-      backdrop-filter: blur(8px);
-      transition: all 0.2s ease;
-    }
-
-    .btn-sayhi:hover {
-      background: rgba(255, 255, 255, 0.12);
     }
 
     /* Hero Section */
@@ -302,12 +205,6 @@
     }
 
     @media (max-width: 900px) {
-      header {
-        padding: 1.25rem 1.5rem;
-      }
-      .nav-pill-center {
-        display: none;
-      }
       .hero-container {
         padding: 0 1.5rem 3rem 1.5rem;
       }
@@ -333,17 +230,11 @@
 
   <!-- Top Navigation -->
   <header class="site-header">
-    <a href="/" class="brand">Wing</a>
+    <a href="/" class="brand">wing.cx</a>
 
-    <!-- Center Navigation Capsule -->
     <nav class="nav-pill-center">
-      <a href="/ships" class="nav-ships" data-i18n="nav.ships">Ships</a>
-      <a href="https://www.linkedin.com/in/daniel-wing" target="_blank" rel="noopener noreferrer" class="nav-item">
-        <svg viewBox="0 0 24 24">
-          <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76a1.65 1.65 0 1 0 0-3.3 1.65 1.65 0 0 0 0 3.3m1.39 9.74v-8.37H5.07v8.37h2.78z"/>
-        </svg>
-        <span data-i18n="nav.linkedin">LinkedIn</span>
-      </a>
+      <a href="/ships" class="nav-item" data-i18n="nav.ships">Ships</a>
+      <a href="/signals" class="nav-item" data-i18n="nav.signals">Signals</a>
     </nav>
 
     <div class="nav-actions">
@@ -351,7 +242,17 @@
         <button type="button" class="lang-opt" data-lang="en">EN</button>
         <button type="button" class="lang-opt" data-lang="es">ES</button>
       </div>
-      <a href="mailto:wing@wing.cx" class="btn-sayhi"><span class="sayhi-text" data-i18n="nav.sayhi">Say Hi</span> <span aria-hidden="true">👋</span></a>
+
+      <a href="https://wa.me/REDACTED" target="_blank" rel="noopener noreferrer"
+         class="btn-sayhi" data-i18n-label="nav.sayhi" aria-label="Say hi">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+        <span class="sayhi-text" data-i18n="nav.sayhi">Say hi</span>
+      </a>
+
+      <a href="https://www.linkedin.com/in/daniel-wing" target="_blank" rel="noopener noreferrer"
+         class="btn-icon" data-i18n-label="nav.linkedin" aria-label="LinkedIn">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76a1.65 1.65 0 1 0 0-3.3 1.65 1.65 0 0 0 0 3.3m1.39 9.74v-8.37H5.07v8.37h2.78z"/></svg>
+      </a>
     </div>
   </header>
 
@@ -372,17 +273,11 @@
       </h1>
 
       <p class="hero-bio" data-i18n="home.bio">
-        Turning raw user complaints into clean data, and clean data into AI that actually solves the problem.
+        Turning raw user feedback into clean data, and clean data into AI solutions that stick.
       </p>
 
       <div class="hero-actions">
         <a href="/ships" class="btn-hero-primary"><span data-i18n="home.cta.ships">View my ships</span> <span class="arrow">→</span></a>
-        <a href="https://www.linkedin.com/in/daniel-wing" target="_blank" rel="noopener noreferrer" class="btn-secondary">
-          <svg viewBox="0 0 24 24">
-            <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76a1.65 1.65 0 1 0 0-3.3 1.65 1.65 0 0 0 0 3.3m1.39 9.74v-8.37H5.07v8.37h2.78z"/>
-          </svg>
-          LinkedIn
-        </a>
       </div>
     </div>
   </main>
