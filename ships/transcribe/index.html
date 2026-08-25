@@ -284,6 +284,13 @@
     }
 
     .done-note { font-size: 0.82rem; font-weight: 600; color: var(--ok); }
+    .done-note.is-unsure { color: var(--warn); }
+
+    .lang-check {
+      font-size: 0.78rem;
+      color: var(--text-faint);
+      margin-top: 0.3rem;
+    }
 
     .tabs { display: flex; gap: 4px; background: var(--pill-bg); border: 1px solid var(--pill-border); border-radius: var(--radius-pill); padding: 4px; }
 
@@ -381,6 +388,7 @@
           <div class="field">
             <label for="language">Language</label>
             <select id="language">
+              <option value="" selected>Detect automatically</option>
               <option value="en">English</option>
               <option value="es">Spanish — Español</option>
               <option value="pt">Portuguese — Português</option>
@@ -424,9 +432,9 @@
           The model downloads once, then your browser caches it — later visits start instantly.
         </p>
         <p class="hint">
-          Pick the language actually spoken in the file. Whisper's automatic detection is
-          unreliable here — it tends to guess English and quietly <em>translate</em> instead
-          of transcribing, so this asks you rather than getting it silently wrong.
+          The language is detected from the audio itself, and whatever it settles on is
+          shown with the result — so a wrong guess is visible rather than silent. If it
+          ever picks wrong, set the language here and run it again.
         </p>
       </section>
 
@@ -478,6 +486,7 @@
           <div>
             <p class="section-label" style="margin-bottom: 0.35rem;">Transcript</p>
             <p class="done-note" id="done-note"></p>
+            <p class="lang-check hidden" id="lang-check"></p>
           </div>
           <div class="tabs">
             <button class="tab is-active" data-view="txt">Text</button>

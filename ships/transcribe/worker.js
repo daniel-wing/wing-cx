@@ -29,6 +29,82 @@ function configFor(device) {
   return { device: 'wasm', dtype: 'q8' };
 }
 
+// Must mirror the windowing inside transformers.js's chunked Whisper path so
+// our chunk count matches the number of generate() calls it will actually make.
+const CHUNK_LENGTH_S = 30;
+const STRIDE_LENGTH_S = 5;
+
+// Whisper's language tokens occupy one contiguous block, <|en|> .. <|su|>.
+const LANG_TOKEN_LO = 50259;
+const LANG_TOKEN_HI = 50357;
+const SOT_TOKEN = 50258; // <|startoftranscript|>
+
+/**
+ * Detection is deliberately run on the loudest 30-second window rather than the
+ * opening one: intros, silence and music derail it.
+ */
+function loudestWindow(audio, samplingRate = 16000) {
+  const window = samplingRate * CHUNK_LENGTH_S;
+  if (audio.length <= window) return audio;
+
+  const step = samplingRate * 15;
+  let bestStart = 0;
+  let bestEnergy = -1;
+  for (let start = 0; start + window <= audio.length; start += step) {
+    let energy = 0;
+    // Sampled every 10ms; a full sum over every window is pure waste here.
+    for (let i = start; i < start + window; i += 160) energy += Math.abs(audio[i]);
+    if (energy > bestEnergy) {
+      bestEnergy = energy;
+      bestStart = start;
+    }
+  }
+  return audio.subarray(bestStart, bestStart + window);
+}
+
+/**
+ * transformers.js never implemented this — its source reads
+ * "TODO: Implement language detection" and hardcodes English, which makes it
+ * silently *translate* anything that isn't English. The model itself is
+ * perfectly capable, so we do what Whisper does: feed only
+ * <|startoftranscript|> and read the next-token distribution over the language
+ * tokens. The library exposes no logits, but a logits_processor is just a
+ * function it calls with them, which is enough to read them out.
+ */
+async function detectLanguage(transcriber, audio) {
+  const features = await transcriber.processor(loudestWindow(audio));
+
+  let captured = null;
+  await transcriber.model.generate({
+    ...features,
+    decoder_input_ids: [SOT_TOKEN],
+    max_new_tokens: 1,
+    return_timestamps: false,
+    logits_processor: [(ids, logits) => { captured ??= logits; return logits; }],
+  });
+  if (!captured?.data) return null;
+
+  const data = captured.data;
+  let bestId = -1;
+  let bestScore = -Infinity;
+  for (let id = LANG_TOKEN_LO; id <= LANG_TOKEN_HI; id++) {
+    const score = Number(data[id]);
+    if (score > bestScore) {
+      bestScore = score;
+      bestId = id;
+    }
+  }
+  if (bestId < 0) return null;
+
+  let sum = 0;
+  for (let id = LANG_TOKEN_LO; id <= LANG_TOKEN_HI; id++) sum += Math.exp(Number(data[id]) - bestScore);
+
+  return {
+    code: transcriber.tokenizer.decode([bestId], { skip_special_tokens: false }).replace(/[<|>]/g, ''),
+    confidence: 1 / sum,
+  };
+}
+
 let pipePromise = null;
 let pipeKey = null;
 
@@ -61,11 +137,6 @@ function getPipeline({ model, device }) {
   return pipePromise;
 }
 
-// Must mirror the windowing inside transformers.js's chunked Whisper path so
-// our chunk count matches the number of generate() calls it will actually make.
-const CHUNK_LENGTH_S = 30;
-const STRIDE_LENGTH_S = 5;
-
 function countChunks(numSamples, samplingRate = 16000) {
   const window = samplingRate * CHUNK_LENGTH_S;
   const jump = window - 2 * samplingRate * STRIDE_LENGTH_S;
@@ -83,6 +154,15 @@ async function run({ model, device, audio, language }) {
   try {
     self.postMessage({ type: 'stage', stage: 'loading' });
     const transcriber = await getPipeline({ model, device });
+
+    let resolvedLanguage = language;
+    let detected = null;
+    if (!resolvedLanguage) {
+      self.postMessage({ type: 'stage', stage: 'detecting' });
+      detected = await detectLanguage(transcriber, audio);
+      resolvedLanguage = detected?.code || 'en';
+      self.postMessage({ type: 'detected', code: resolvedLanguage, confidence: detected?.confidence ?? 0 });
+    }
 
     const totalChunks = countChunks(audio.length);
     self.postMessage({ type: 'stage', stage: 'transcribing', totalChunks });
@@ -106,11 +186,10 @@ async function run({ model, device, audio, language }) {
     };
 
     const output = await transcriber(audio, {
-      // Always pass an explicit language and task. Left to detect on its own,
-      // this model reliably guesses <|en|> on non-English audio and then
-      // *translates* it to English instead of transcribing — a silent wrong
-      // answer. The UI therefore always sends a real language code.
-      language: language || 'en',
+      // Never left blank: a missing language makes the library assume English
+      // and translate instead of transcribe. By this point it is either the
+      // visitor's explicit choice or the result of detectLanguage().
+      language: resolvedLanguage,
       task: 'transcribe',
       return_timestamps: true,
       chunk_length_s: CHUNK_LENGTH_S,
@@ -122,6 +201,8 @@ async function run({ model, device, audio, language }) {
       type: 'done',
       text: output.text ?? '',
       chunks: output.chunks ?? [],
+      language: resolvedLanguage,
+      detected: detected ? { code: detected.code, confidence: detected.confidence } : null,
       ms: performance.now() - started,
     });
   } catch (err) {

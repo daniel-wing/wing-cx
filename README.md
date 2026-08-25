@@ -76,10 +76,24 @@ have comments at the call site; re-verify before changing either.
 - **The WebGPU encoder stays `fp32`.** An `fp16` encoder halves the download and
   produces an endless run of em-dashes instead of speech.
 
-There is deliberately no "detect language automatically" option. Whisper's
-detection here reports English for non-English audio and then *translates* it
-rather than transcribing — a silently wrong answer. The language selector
-defaults to the browser's own language instead.
+#### Language detection
+
+transformers.js never implemented it: `_retrieve_init_tokens` in its source
+reads `// TODO: Implement language detection` and hardcodes English. Because
+Whisper *translates* when told the wrong language, a Spanish recording came
+back as fluent English prose — with a 19x repetition loop, which turned out to
+be a symptom of the same cause rather than a separate bug. Same audio forced to
+`es`: no repetition.
+
+`worker.js` therefore implements detection the way Whisper does: feed the
+decoder only `<|startoftranscript|>` and take the argmax over the language
+token block. The library exposes no logits, but a `logits_processor` is just a
+function it hands them to, which is enough to read them out. Detection runs on
+the loudest 30-second window, since intros and silence derail it.
+
+Never default the picker to the browser's locale. An English-locale browser is
+no evidence the recording is English, and getting it wrong fails silently. The
+detected language is always shown next to the result for that reason.
 
 #### Speed
 

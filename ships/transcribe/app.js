@@ -24,6 +24,7 @@ const el = {
   errorBox: $('error-box'),
   outputPanel: $('output-panel'),
   doneNote: $('done-note'),
+  langCheck: $('lang-check'),
   transcript: $('transcript'),
   copyBtn: $('copy-btn'),
   dlTxt: $('dl-txt'),
@@ -63,6 +64,7 @@ const state = {
   file: null,
   device: 'wasm',
   duration: null,
+  detected: null,
   firstChunkMs: 0,
   running: false,
   objectUrl: null,
@@ -144,17 +146,13 @@ function updateEstimate() {
   el.estimate.textContent = `Roughly ${lowMin}–${highMin} min, depending on your computer.`;
 }
 
-/** Preselect the browser's own language when Whisper supports it. */
-function applyDefaultLanguage() {
-  const supported = new Set(Array.from(el.language.options, (o) => o.value));
-  for (const tag of navigator.languages ?? [navigator.language]) {
-    const code = String(tag || '').toLowerCase().split('-')[0];
-    if (supported.has(code)) {
-      el.language.value = code;
-      return;
-    }
+/** Human-readable name for a whisper language code, from the picker itself. */
+function languageName(code) {
+  if (!code) return '';
+  for (const option of el.language.options) {
+    if (option.value === code) return option.textContent.split('—')[0].trim();
   }
-  el.language.value = 'en';
+  return code.toUpperCase();
 }
 
 /* ---------------- helpers ---------------- */
@@ -323,6 +321,8 @@ function clearFile() {
 function resetOutput() {
   state.txt = '';
   state.srt = '';
+  state.detected = null;
+  el.langCheck.classList.add('hidden');
   el.outputPanel.classList.add('hidden');
   el.transcript.value = '';
 }
@@ -421,6 +421,8 @@ function ensureWorker() {
         setProgress({ label: 'Preparing the model…', indeterminate: true, note: '' });
       } else if (msg.stage === 'warming') {
         setProgress({ label: 'Warming up your GPU…', indeterminate: true, note: '' });
+      } else if (msg.stage === 'detecting') {
+        setProgress({ label: 'Working out the language…', indeterminate: true, note: '' });
       } else if (msg.stage === 'transcribing') {
         state.totalChunks = msg.totalChunks ?? 0;
         setProgress({
@@ -429,6 +431,8 @@ function ensureWorker() {
           note: '',
         });
       }
+    } else if (msg.type === 'detected') {
+      state.detected = msg;
     } else if (msg.type === 'chunk') {
       handleChunk(msg);
     } else if (msg.type === 'done') {
@@ -479,7 +483,21 @@ function finish({ text, chunks, ms }) {
     return;
   }
 
-  el.doneNote.textContent = `Done in ${formatDuration(seconds)}`;
+  const bits = [`Done in ${formatDuration(seconds)}`];
+  if (state.detected?.code) {
+    const name = languageName(state.detected.code);
+    const confident = (state.detected.confidence ?? 0) >= 0.6;
+    bits.push(confident ? `detected ${name}` : `detected ${name}, but not confidently`);
+  }
+  el.doneNote.textContent = bits.join(' · ');
+  el.doneNote.classList.toggle('is-unsure', !!state.detected && (state.detected.confidence ?? 0) < 0.6);
+
+  // Any wrong guess should be correctable without hunting for the control.
+  el.langCheck.classList.toggle('hidden', !state.detected?.code);
+  if (state.detected?.code) {
+    el.langCheck.innerHTML =
+      `Not ${languageName(state.detected.code)}? Pick the right language above and run it again.`;
+  }
   el.outputPanel.classList.remove('hidden');
   setView(state.view);
   el.outputPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -611,5 +629,4 @@ window.addEventListener('beforeunload', (e) => {
   if (state.running) e.preventDefault();
 });
 
-applyDefaultLanguage();
 detectRuntime();
