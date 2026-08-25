@@ -172,7 +172,14 @@ function refreshAdvice() {
 /* ---------------- runtime detection ---------------- */
 
 async function detectRuntime() {
-  if (navigator.gpu) {
+  // Phones deliberately never take the WebGPU path, even when they advertise
+  // it. An iPhone on iOS 26 reported WebGPU and then killed the tab while
+  // building the inference session, first with base (199 MB) and again with
+  // tiny (117 MB). Halving the weights changed nothing, so the ceiling is not
+  // the model: Safari's WebGPU limits are, and exceeding them takes the whole
+  // renderer down rather than raising something catchable. WASM is slower and
+  // finishes.
+  if (!state.isMobile && navigator.gpu) {
     try {
       const adapter = await navigator.gpu.requestAdapter();
       if (adapter) state.device = 'webgpu';
@@ -181,11 +188,14 @@ async function detectRuntime() {
 
   const fast = state.device === 'webgpu';
   el.runtimeBadge.classList.toggle('is-fast', fast);
-  el.runtimeText.textContent = fast ? 'WebGPU' : 'CPU (WASM)';
+
+  el.runtimeText.textContent = fast ? 'WebGPU' : (state.isMobile ? 'CPU (safest here)' : 'CPU (WASM)');
 
   el.engineHint.textContent = fast
     ? 'Your GPU will do the work. The model downloads once, then your browser caches it — later visits start instantly.'
-    : 'Your browser has no WebGPU, so this falls back to the CPU and will be noticeably slower. Chrome or Edge on a desktop gives you the fast path.';
+    : state.isMobile
+      ? 'This runs on the CPU. Phones do advertise GPU support, but using it here crashes the tab outright, so the slower path is the one that actually finishes.'
+      : 'Your browser has no WebGPU, so this falls back to the CPU and will be noticeably slower. Chrome or Edge on a desktop gives you the fast path.';
 
   // Now that we know the runtime, show download sizes that are actually true.
   for (const option of el.model.options) {
@@ -205,10 +215,11 @@ async function detectRuntime() {
     // Only phones get told this. On a laptop it is noise.
     const mb = MODEL_MB[el.model.value]?.[state.device] ?? 197;
     el.mobileNote.innerHTML =
-      'You are on a phone, so this has picked the smallest model. Phones cannot hold the ' +
-      'larger ones in memory, and Safari responds by reloading the tab rather than showing ' +
-      `an error. It is still a ${mb} MB one-time download, so wi-fi is worth it. For longer ` +
-      'recordings or better accuracy, the <a href="#desktop">desktop version</a> has neither limit.';
+      'You are on a phone, so this uses the smallest model and the CPU rather than the GPU. ' +
+      'Phones advertise GPU support but crash the tab when it is actually used for this, so ' +
+      `the slower route is the one that finishes. It is a ${mb} MB one-time download. ` +
+      'Expect roughly a minute per minute of recording; for anything longer, or for better ' +
+      'accuracy, the <a href="#desktop">desktop version</a> is far quicker and has no limit.';
     el.mobileNote.classList.remove('hidden');
   }
 }
