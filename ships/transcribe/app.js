@@ -19,6 +19,8 @@ const el = {
   progressPct: $('progress-pct'),
   progressTrack: $('progress-track'),
   progressBar: $('progress-bar'),
+  progressNote: $('progress-note'),
+  estimate: $('estimate'),
   errorBox: $('error-box'),
   outputPanel: $('output-panel'),
   doneNote: $('done-note'),
@@ -37,12 +39,31 @@ const el = {
 const MODEL_MB = {
   'onnx-community/whisper-tiny':  { webgpu: 114, wasm: 39,  label: 'Tiny — fastest, roughest' },
   'onnx-community/whisper-base':  { webgpu: 197, wasm: 73,  label: 'Base — balanced' },
-  'onnx-community/whisper-small': { webgpu: 559, wasm: 238, label: 'Small — most accurate, slowest' },
+  'onnx-community/whisper-small': { webgpu: 559, wasm: 238, label: 'Small — most accurate, and no slower on a GPU' },
+};
+
+/**
+ * Wall-clock seconds spent per second of audio, measured on dense continuous
+ * speech (a lecture recording) rather than short clips — short clips finish
+ * disproportionately fast and make these look better than they are.
+ *
+ * Only ever a starting guess: once the first segment lands, the UI switches to
+ * an estimate measured on the visitor's own machine.
+ */
+const SPEED = {
+  'onnx-community/whisper-tiny':  { webgpu: 0.25, wasm: 0.55 },
+  'onnx-community/whisper-base':  { webgpu: 0.43, wasm: 0.75 },
+  // Not a typo: on a GPU, small beats base on wall time. Bigger models loop and
+  // hallucinate less, so they emit fewer tokens per window. Its WASM figure is
+  // extrapolated rather than measured.
+  'onnx-community/whisper-small': { webgpu: 0.33, wasm: 2.00 },
 };
 
 const state = {
   file: null,
   device: 'wasm',
+  duration: null,
+  firstChunkMs: 0,
   running: false,
   objectUrl: null,
   txt: '',
@@ -75,6 +96,54 @@ async function detectRuntime() {
     const spec = MODEL_MB[option.value];
     if (spec) option.textContent = `${spec.label} (~${spec[state.device]} MB)`;
   }
+
+  updateEstimate();
+}
+
+/** Round a duration to something a human would actually say out loud. */
+function roughDuration(seconds) {
+  if (seconds < 45) return 'well under a minute';
+  if (seconds < 90) return 'about a minute';
+  if (seconds < 60 * 60) return `about ${Math.round(seconds / 60)} min`;
+  const hours = seconds / 3600;
+  return `about ${hours.toFixed(1)} hr`;
+}
+
+/** Phrasing for the time-remaining line, which reads as a full sentence. */
+function remainingText(seconds) {
+  if (seconds < 20) return 'Almost done.';
+  if (seconds < 50) return 'Less than a minute left.';
+  if (seconds < 90) return 'About a minute left.';
+  if (seconds < 60 * 60) return `About ${Math.round(seconds / 60)} min left.`;
+  return `About ${(seconds / 3600).toFixed(1)} hr left.`;
+}
+
+/**
+ * Up-front guess, shown before anything starts. Deliberately a range: the
+ * numbers in SPEED come from one fast laptop, and a slower machine can easily
+ * take twice as long. Once transcription starts this is replaced by a figure
+ * measured on the visitor's own hardware.
+ */
+function updateEstimate() {
+  const ratio = SPEED[el.model.value]?.[state.device];
+  if (!state.duration || !Number.isFinite(state.duration) || !ratio) {
+    el.estimate.textContent = '';
+    return;
+  }
+
+  const low = state.duration * ratio;
+  const high = low * 2;
+
+  let span;
+  if (high < 60) {
+    span = 'under a minute';
+  } else {
+    const lowMin = Math.max(1, Math.round(low / 60));
+    const highMin = Math.max(lowMin + 1, Math.round(high / 60));
+    span = `${lowMin}–${highMin} min`;
+  }
+
+  el.estimate.textContent = `Roughly ${span}, depending on your computer.`;
 }
 
 /** Preselect the browser's own language when Whisper supports it. */
@@ -200,6 +269,8 @@ function setFile(file) {
   releasePreview();
 
   state.file = file;
+  state.duration = null;
+  el.estimate.textContent = '';
   el.fileName.textContent = file.name;
   el.fileMeta.textContent = formatBytes(file.size);
   el.filePanel.classList.remove('hidden');
@@ -216,7 +287,9 @@ function setFile(file) {
 
   preview.onloadedmetadata = () => {
     if (Number.isFinite(preview.duration)) {
+      state.duration = preview.duration;
       el.fileMeta.textContent = `${formatBytes(file.size)} · ${formatDuration(preview.duration)}`;
+      updateEstimate();
       if (preview.duration > 3600) {
         showError(
           '<strong>Heads up:</strong> that is over an hour of audio. It will work, but it needs a lot of memory and will take a while. If your browser runs out of memory, split the file first.'
@@ -241,6 +314,8 @@ function clearFile() {
   stopRun();
   releasePreview();
   state.file = null;
+  state.duration = null;
+  el.estimate.textContent = '';
   el.filePanel.classList.add('hidden');
   el.fileInput.value = '';
   resetOutput();
@@ -258,7 +333,7 @@ function resetOutput() {
 
 const downloads = new Map();
 
-function setProgress({ label, pct, indeterminate }) {
+function setProgress({ label, pct, indeterminate, note }) {
   el.progressWrap.classList.remove('hidden');
   el.progressLabel.textContent = label;
   el.progressTrack.classList.toggle('is-indeterminate', !!indeterminate);
@@ -268,6 +343,9 @@ function setProgress({ label, pct, indeterminate }) {
     el.progressPct.textContent = `${Math.round(pct)}%`;
     el.progressBar.style.width = `${pct}%`;
   }
+  if (note === undefined) return;
+  el.progressNote.innerHTML = note ?? '';
+  el.progressNote.classList.toggle('hidden', !note);
 }
 
 function handleProgressEvent(event) {
@@ -281,11 +359,51 @@ function handleProgressEvent(event) {
     }
     if (total > 0) {
       setProgress({
-        label: `Downloading model — ${formatBytes(loaded)} of ${formatBytes(total)}`,
+        label: `Downloading the speech model — ${formatBytes(loaded)} of ${formatBytes(total)}`,
         pct: (loaded / total) * 100,
+        note:
+          '<strong>Why is it downloading something?</strong> Because the transcription ' +
+          'happens on your computer, the speech model has to come to your file — rather ' +
+          'than your file being sent off to someone else\'s computer. That is the whole ' +
+          'trade: a one-time download instead of uploading your video to a server. ' +
+          'Your browser keeps the model afterwards, so this only happens once.',
       });
     }
   }
+}
+
+/**
+ * Real progress: the worker reports one completed 30-second window at a time,
+ * so both the bar and the remaining-time figure are measured, not invented.
+ */
+function handleChunk({ done, total, elapsed }) {
+  const pct = total > 0 ? (done / total) * 100 : 0;
+  let note = '';
+
+  if (done === 1) state.firstChunkMs = elapsed;
+
+  if (done > 0 && done < total) {
+    let remainingMs;
+    if (done >= 2) {
+      // Skip the first window when measuring the rate: it also pays for shader
+      // compilation on the real audio shapes, which made the opening estimate
+      // roughly 3x too pessimistic and then visibly lurch downwards.
+      const perChunk = (elapsed - state.firstChunkMs) / (done - 1);
+      remainingMs = perChunk * (total - done);
+    } else {
+      const ratio = SPEED[el.model.value]?.[state.device];
+      remainingMs = ratio && state.duration
+        ? ratio * state.duration * 1000 * ((total - done) / total)
+        : null;
+    }
+    if (remainingMs != null) note = remainingText(remainingMs / 1000);
+  }
+
+  setProgress({
+    label: total > 1 ? `Transcribing — segment ${Math.min(done + 1, total)} of ${total}` : 'Transcribing…',
+    pct,
+    note,
+  });
 }
 
 /* ---------------- worker lifecycle ---------------- */
@@ -302,12 +420,19 @@ function ensureWorker() {
       handleProgressEvent(msg.event);
     } else if (msg.type === 'stage') {
       if (msg.stage === 'loading') {
-        setProgress({ label: 'Preparing model…', indeterminate: true });
+        setProgress({ label: 'Preparing the model…', indeterminate: true, note: '' });
       } else if (msg.stage === 'warming') {
-        setProgress({ label: 'Warming up the GPU…', indeterminate: true });
+        setProgress({ label: 'Warming up your GPU…', indeterminate: true, note: '' });
       } else if (msg.stage === 'transcribing') {
-        setProgress({ label: 'Transcribing…', indeterminate: true });
+        state.totalChunks = msg.totalChunks ?? 0;
+        setProgress({
+          label: state.totalChunks > 1 ? `Transcribing — segment 1 of ${state.totalChunks}` : 'Transcribing…',
+          pct: 0,
+          note: '',
+        });
       }
+    } else if (msg.type === 'chunk') {
+      handleChunk(msg);
     } else if (msg.type === 'done') {
       finish(msg);
     } else if (msg.type === 'error') {
@@ -333,6 +458,8 @@ function stopRun() {
   el.runBtn.textContent = 'Generate transcript';
   el.cancelBtn.classList.add('hidden');
   el.progressWrap.classList.add('hidden');
+  el.progressNote.classList.add('hidden');
+  el.progressNote.textContent = '';
   el.model.disabled = false;
   el.language.disabled = false;
 }
@@ -374,7 +501,7 @@ async function startRun() {
   el.model.disabled = true;
   el.language.disabled = true;
 
-  setProgress({ label: 'Reading audio…', indeterminate: true });
+  setProgress({ label: 'Reading the audio…', indeterminate: true, note: '' });
 
   let audio;
   try {
@@ -456,6 +583,8 @@ window.addEventListener('drop', (e) => e.preventDefault());
 el.clearFile.addEventListener('click', clearFile);
 el.runBtn.addEventListener('click', startRun);
 el.cancelBtn.addEventListener('click', stopRun);
+
+el.model.addEventListener('change', updateEstimate);
 
 for (const tab of document.querySelectorAll('.tab')) {
   tab.addEventListener('click', () => setView(tab.dataset.view));

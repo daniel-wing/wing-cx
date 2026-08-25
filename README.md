@@ -81,8 +81,28 @@ detection here reports English for non-English audio and then *translates* it
 rather than transcribing — a silently wrong answer. The language selector
 defaults to the browser's own language instead.
 
-Measured on an M-series Mac, `base` model: ~4s of WebGPU per 11s of audio,
-versus ~28s on the WASM fallback.
+#### Speed
+
+Wall-clock time as a multiple of audio length, measured on an M-series Mac
+against a real lecture recording. Short clips finish disproportionately fast
+and flatter these numbers, so don't benchmark with a ten-second sample.
+
+| Model | WebGPU | WASM | 10-min video (WebGPU) |
+|-------|--------|------|-----------------------|
+| tiny  | 0.25x  | 0.52x | ~2.5 min |
+| base  | 0.43x  | 0.74x | ~4.5 min |
+| small | 0.33x  | n/a   | ~3.5 min |
+
+`small` being *faster* than `base` on a GPU is not a typo, and it is
+reproducible: larger models loop and hallucinate less, so they emit fewer
+tokens per 30-second window, and the decode loop dominates. On a GPU `small`
+is both quicker and more accurate — its only real cost is the 559 MB download.
+
+These feed the up-front estimate in `SPEED` in `app.js`, which is shown as a
+range because a slower machine can easily take twice as long. Once the first
+segment completes, the UI switches to a figure measured on the visitor's own
+hardware, ignoring the first window (it also pays for shader compilation and
+runs ~3x slow).
 
 ## Roadmap
 

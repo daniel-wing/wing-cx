@@ -61,13 +61,49 @@ function getPipeline({ model, device }) {
   return pipePromise;
 }
 
+// Must mirror the windowing inside transformers.js's chunked Whisper path so
+// our chunk count matches the number of generate() calls it will actually make.
+const CHUNK_LENGTH_S = 30;
+const STRIDE_LENGTH_S = 5;
+
+function countChunks(numSamples, samplingRate = 16000) {
+  const window = samplingRate * CHUNK_LENGTH_S;
+  const jump = window - 2 * samplingRate * STRIDE_LENGTH_S;
+  let offset = 0;
+  let n = 0;
+  while (true) {
+    n++;
+    if (offset + window >= numSamples) break;
+    offset += jump;
+  }
+  return n;
+}
+
 async function run({ model, device, audio, language }) {
   try {
     self.postMessage({ type: 'stage', stage: 'loading' });
     const transcriber = await getPipeline({ model, device });
 
-    self.postMessage({ type: 'stage', stage: 'transcribing' });
+    const totalChunks = countChunks(audio.length);
+    self.postMessage({ type: 'stage', stage: 'transcribing', totalChunks });
     const started = performance.now();
+
+    // The pipeline exposes no per-chunk hook, but it forwards these options
+    // into model.generate(), which drives a streamer. One end() per 30s window
+    // gives us honest progress instead of a bar that only pretends to move.
+    let doneChunks = 0;
+    const streamer = {
+      put() {},
+      end() {
+        doneChunks++;
+        self.postMessage({
+          type: 'chunk',
+          done: doneChunks,
+          total: totalChunks,
+          elapsed: performance.now() - started,
+        });
+      },
+    };
 
     const output = await transcriber(audio, {
       // Always pass an explicit language and task. Left to detect on its own,
@@ -77,8 +113,9 @@ async function run({ model, device, audio, language }) {
       language: language || 'en',
       task: 'transcribe',
       return_timestamps: true,
-      chunk_length_s: 30,
-      stride_length_s: 5,
+      chunk_length_s: CHUNK_LENGTH_S,
+      stride_length_s: STRIDE_LENGTH_S,
+      streamer,
     });
 
     self.postMessage({

@@ -239,6 +239,25 @@
       100% { transform: translateX(340%); }
     }
 
+    .estimate {
+      font-size: 0.82rem;
+      color: var(--text-faint);
+      align-self: center;
+    }
+
+    .progress-note {
+      font-size: 0.8rem;
+      line-height: 1.5;
+      color: var(--text-faint);
+      margin-top: 0.85rem;
+      max-width: 60ch;
+    }
+
+    .progress-note strong {
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
     /* ---------- Messages ---------- */
 
     .message {
@@ -356,7 +375,7 @@
             <select id="model">
               <option value="onnx-community/whisper-tiny">Tiny — fastest, roughest</option>
               <option value="onnx-community/whisper-base" selected>Base — balanced</option>
-              <option value="onnx-community/whisper-small">Small — most accurate, slowest</option>
+              <option value="onnx-community/whisper-small">Small — most accurate, and no slower on a GPU</option>
             </select>
           </div>
           <div class="field">
@@ -435,6 +454,7 @@
         <div class="actions">
           <button class="btn-primary" id="run-btn">Generate transcript</button>
           <button class="btn-secondary hidden" id="cancel-btn">Cancel</button>
+          <span class="estimate" id="estimate"></span>
         </div>
 
         <div class="progress-wrap hidden" id="progress-wrap">
@@ -445,6 +465,7 @@
           <div class="progress-track" id="progress-track">
             <div class="progress-bar" id="progress-bar"></div>
           </div>
+          <p class="progress-note hidden" id="progress-note"></p>
         </div>
       </section>
 
