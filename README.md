@@ -80,6 +80,15 @@ Deployed on [Vercel](https://vercel.com) from this repo. Vercel serves the
 repo root as static output — no framework preset or build command needed.
 Pushes to `main` deploy automatically.
 
+The Vercel project, the domain settings and the DNS records are *not* in this
+repo, so a clone alone will not reproduce the site. They are written down in
+[docs/infrastructure.md](docs/infrastructure.md), including the steps to rebuild
+from nothing.
+
+Why decisions were made the way they were is kept in
+[docs/wing-log/](docs/wing-log/) — a running log of sessions, with the
+alternatives that were rejected and why.
+
 ## Ships
 
 `/ships` is the shelf; each project gets a folder under it. To add one, drop in
