@@ -34,3 +34,28 @@ untangling which folder actually held the live project.
 - Nav is now Ships plus Signals. /signals ships with an empty state. See topic-site-shell.
 - Contact moved out of the header to the bottom of each page, which removed the responsive breakage entirely. See topic-site-shell.
 - One regression was introduced and fixed within the session: the Whisper attribution line on the Scribe page was dropped by a footer rewrite. See topic-site-shell.
+
+### 2026-08-26 - 2048 added to Ships, and the webfont brought in-house
+
+**Summary:** The ad-free 2048 game was built in ~/Projects/2048 and staged into
+this repo at ships/2048, replacing an untracked export left over from an earlier
+attempt. Its Ships card was retagged. While wiring the game up, the Google Fonts
+dependency was removed from the whole site in favour of self-hosted files.
+
+**Topics touched:** topic-site-shell
+
+**Key outcomes:**
+- ships/2048 now holds the Expo static export of the new game, built with a
+  baseUrl of /ships/2048 so every asset URL carries that prefix.
+- The Ships card for 2048 is tagged Games, No ads, MIT, with a new i18n key
+  ships.2048.tag1 in both languages.
+- vercel.json rewrites for the game's sub-routes were corrected to point at the
+  per-route HTML files rather than index.html. The export is statically
+  rendered, so /ships/2048/about had been serving the game page. A missing
+  rewrite for /ships/2048/settings was added.
+- Plus Jakarta Sans is now served from /assets/fonts on every page instead of
+  fonts.googleapis.com. See topic-site-shell for the reasoning and the caveat
+  about Scribe.
+
+**Left open:** everything above is staged and uncommitted, by request. Nothing
+is live on wing.cx yet.

@@ -8,7 +8,7 @@
   <link rel="canonical" href="https://wing.cx/ships" />
   <link rel="alternate" hreflang="en" href="https://wing.cx/ships?lang=en" />
   <link rel="alternate" hreflang="es" href="https://wing.cx/ships?lang=es" />
-  <meta name="theme-color" content="#3681ab" />
+  <meta name="theme-color" content="#275973" />
 
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
@@ -21,9 +21,11 @@
   <meta property="og:description" content="Small, free tools Daniel Wing has built and shipped. No sign-ups, no accounts, no cost." />
   <meta property="og:image" content="https://wing.cx/og-image.jpg" />
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Self-hosted Plus Jakarta Sans (see assets/site.css). Preloading the latin
+       subset avoids a flash of fallback text; it is the only font file
+       virtually every visitor needs. -->
+  <link rel="preload" as="font" type="font/woff2"
+        href="/assets/fonts/plus-jakarta-sans-latin.woff2" crossorigin>
   <link rel="stylesheet" href="/assets/site.css">
   <script src="/assets/i18n.js" defer></script>
   <script src="/assets/site.js" defer></script>
@@ -70,6 +72,21 @@
           <span class="tag">Whisper</span>
           <span class="tag">WebGPU</span>
           <span class="tag" data-i18n="ships.scribe.tag3">Private</span>
+        </div>
+        <p class="card-open"><span data-i18n="ships.open">Open</span> <span class="arrow">→</span></p>
+      </a>
+
+      <a href="/ships/2048" class="card">
+        <span class="card-status" data-i18n="ships.status.live">Live</span>
+        <h2 class="card-name" data-i18n="ships.2048.name">2048 Ad-Free</h2>
+        <p class="card-desc" data-i18n="ships.2048.desc">
+          The classic number puzzle, with no ads. I made this because I like 2048 and hate ads.
+          Unofficial remake of Gabriele Cirulli’s MIT-licensed original.
+        </p>
+        <div class="card-tags">
+          <span class="tag" data-i18n="ships.2048.tag1">Games</span>
+          <span class="tag" data-i18n="ships.2048.tag3">No ads</span>
+          <span class="tag">MIT</span>
         </div>
         <p class="card-open"><span data-i18n="ships.open">Open</span> <span class="arrow">→</span></p>
       </a>

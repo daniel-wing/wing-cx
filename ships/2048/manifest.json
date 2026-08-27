@@ -1,0 +1,36 @@
+{
+  "name": "2048 \u2014 Free and Ad-Free",
+  "short_name": "2048",
+  "description": "A free, ad-free, tracking-free 2048. Works offline. No accounts, no analytics, no third-party requests. Your data never leaves your device.",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#275973",
+  "theme_color": "#275973",
+  "categories": [
+    "games",
+    "puzzle"
+  ],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "id": "/ships/2048/"
+}

@@ -32,6 +32,10 @@ window.WING_STRINGS = {
     'ships.scribe.tag3': 'Private',
     'ships.open': 'Open',
     'ships.more': 'More on the way',
+    'ships.2048.name': '2048 Ad-Free',
+    'ships.2048.desc': 'The classic number puzzle, with no ads. I made this because I like 2048 and hate ads. Unofficial remake of Gabriele Cirulli’s MIT-licensed original.',
+    'ships.2048.tag1': 'Games',
+    'ships.2048.tag3': 'No ads',
 
     /* ---- signals index ---- */
     'signals.title': 'Signals — wing.cx',
@@ -176,6 +180,10 @@ window.WING_STRINGS = {
     'ships.scribe.tag3': 'Privado',
     'ships.open': 'Abrir',
     'ships.more': 'Pronto habrá más',
+    'ships.2048.name': '2048 Ad-Free',
+    'ships.2048.desc': 'El clásico puzzle numérico, sin anuncios. Lo hice porque me gusta 2048 y odio los anuncios. Recreación no oficial del original con licencia MIT de Gabriele Cirulli.',
+    'ships.2048.tag1': 'Juegos',
+    'ships.2048.tag3': 'Sin anuncios',
 
     /* ---- scribe: header ---- */
     'scribe.title': 'Scribe — wing.cx',

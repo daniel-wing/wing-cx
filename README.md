@@ -95,6 +95,30 @@ alternatives that were rejected and why.
 `ships/<name>/index.html`, link `/assets/site.css`, and add a card to
 `ships/index.html`.
 
+### 2048 Ad-Free
+
+The game lives at `/ships/2048`. It is an Expo static web export from the
+`2048` repo, not hand-written HTML like Scribe. Build it there with
+`npm run build:web`, then copy `apps/game/dist` over `ships/2048` here.
+
+**`ships/2048/` is generated. Do not edit it by hand** — the next build will
+overwrite whatever you change. The source of truth is the other repo.
+
+It is committed here rather than built at deploy time because Vercel serves this
+repo directly, and a second Vercel project for one small game is not worth the
+moving parts. The cost is that every rebuild emits freshly content-hashed bundle
+filenames, so each commit of it adds a couple of megabytes to history that git
+will never forget. **So only rebuild and commit it when actually shipping a
+version of the game**, not on every tweak — otherwise this repo quietly grows by
+2 MB a time for changes nobody will ever look back at.
+
+The export is statically rendered — one prerendered `.html` per route, not a
+single-page app — so `vercel.json` rewrites each route to its own file
+(`/ships/2048/settings` to `settings.html`, and so on), plus a catch-all so a
+mistyped path reaches the game's own not-found screen rather than a bare 404.
+
+Unofficial remake of Gabriele Cirulli’s MIT-licensed 2048. Free, no ads.
+
 ### Scribe
 
 Whisper runs in the visitor's browser via

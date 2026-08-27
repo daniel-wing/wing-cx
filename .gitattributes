@@ -1,0 +1,9 @@
+# ships/2048 is build output from the `2048` repo, not source. Marking it
+# generated keeps GitHub from showing thousands of lines of bundled JS in
+# diffs and from counting it in the repo's language stats — the repo should
+# read as the hand-written site it mostly is.
+ships/2048/** linguist-generated=true
+ships/2048/**/*.js -diff
+
+# Fonts are binary; a textual diff of them is noise.
+assets/fonts/*.woff2 binary

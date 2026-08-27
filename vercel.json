@@ -11,5 +11,31 @@
       "destination": "/ships/scribe/:path*",
       "permanent": true
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/ships/2048/watch",
+      "destination": "/ships/2048/watch.html"
+    },
+    {
+      "source": "/ships/2048/how-to-play",
+      "destination": "/ships/2048/how-to-play.html"
+    },
+    {
+      "source": "/ships/2048/settings",
+      "destination": "/ships/2048/settings.html"
+    },
+    {
+      "source": "/ships/2048/stats",
+      "destination": "/ships/2048/stats.html"
+    },
+    {
+      "source": "/ships/2048/about",
+      "destination": "/ships/2048/about.html"
+    },
+    {
+      "source": "/ships/2048/:path*",
+      "destination": "/ships/2048/index.html"
+    }
   ]
 }
