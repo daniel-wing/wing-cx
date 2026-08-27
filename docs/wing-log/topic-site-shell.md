@@ -67,6 +67,17 @@ that shaped all of it.
 - **Alternatives considered:** Duplicating the card CSS into signals/index.html, rejected for the same drift reason.
 - **Trade-offs accepted:** A mechanical rename across one file, verified by grep before and after.
 
+### 2026-08-26 - Plus Jakarta Sans self-hosted instead of loaded from Google
+
+- **Decision:** The font now ships from /assets/fonts as two woff2 files, declared with @font-face at the top of site.css. All four pages dropped the two fonts preconnects and the fonts.googleapis.com stylesheet link, and gained a preload for the latin subset.
+- **Why:** Every page was handing the visitor's IP to Google purely to draw text. It also cost a DNS lookup and TLS handshake to two extra origins before any text could render. The files served are the genuine Google Fonts builds, so nothing changes visually. This started as a requirement for /ships/2048, which promises zero network requests and could not link a CDN without making that promise false, and it made sense to bring the rest of the site along.
+- **Alternatives considered:** Leaving the CDN in place for the site and self-hosting only inside the game, rejected because the two would then drift and the site would keep the third-party call for no benefit.
+- **Trade-offs accepted:** The font is now a checked-in binary that has to be refreshed by hand if a newer version is wanted. 47.8 KB in the repo.
+
+**Details.** One variable file covers the whole 200-800 axis, replacing the six static weights the old URL requested. The site uses 200 through 800; the old URL also asked for 900, which nothing ever used. Only the latin and latin-ext subsets ship: every accented character Spanish needs sits in U+0000-00FF inside latin, so an ES visitor never fetches latin-ext. SIL Open Font License 1.1, with OFL.txt beside the files as the licence requires.
+
+**Note on Scribe.** /ships/scribe still contacts cdn.jsdelivr.net and huggingface.co at runtime, because that is where the Whisper model and transformers.js come from. That is inherent to what Scribe does and was not touched. Google Fonts is gone from every page, but "no third-party requests at all" is true of the site and the game, not of Scribe.
+
 ## How it works
 
 Every page loads /assets/site.css, /assets/i18n.js and /assets/site.js. The

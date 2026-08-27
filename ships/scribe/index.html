@@ -8,7 +8,7 @@
   <link rel="canonical" href="https://wing.cx/ships/scribe" />
   <link rel="alternate" hreflang="en" href="https://wing.cx/ships/scribe?lang=en" />
   <link rel="alternate" hreflang="es" href="https://wing.cx/ships/scribe?lang=es" />
-  <meta name="theme-color" content="#3681ab" />
+  <meta name="theme-color" content="#275973" />
 
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
@@ -21,11 +21,13 @@
   <meta property="og:description" content="Drop in a video or audio file and get a transcript plus SRT subtitles. Whisper runs locally in your browser — nothing is uploaded." />
   <meta property="og:image" content="https://wing.cx/og-image.jpg" />
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="preconnect" href="https://huggingface.co" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Self-hosted Plus Jakarta Sans (see assets/site.css). Preloading the latin
+       subset avoids a flash of fallback text; it is the only font file
+       virtually every visitor needs. -->
+  <link rel="preload" as="font" type="font/woff2"
+        href="/assets/fonts/plus-jakarta-sans-latin.woff2" crossorigin>
   <link rel="stylesheet" href="/assets/site.css">
   <script src="/assets/i18n.js" defer></script>
   <script src="/assets/site.js" defer></script>

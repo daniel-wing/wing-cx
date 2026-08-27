@@ -3,12 +3,56 @@
    everything that lives under it. Keep the tokens below in sync with
    index.html if the palette ever moves. */
 
+/* ---------- Typeface ----------
+
+   Plus Jakarta Sans, self-hosted rather than linked from Google's CDN.
+
+   These are the genuine Google Fonts files (v12, variable weight axis 200-800),
+   so the rendering is identical to what the CDN served. Hosting them here means
+   no page on this site hands a visitor's IP to a third party just to draw text,
+   and it drops a DNS lookup plus TLS handshake to two extra origins from every
+   page load.
+
+   One variable file replaces the six static weights the old CDN URL requested.
+   The site uses 200 through 800, which the axis covers exactly. (That URL also
+   asked for 900; nothing here ever used it.)
+
+   Only the latin and latin-ext subsets ship. Every accented character Spanish
+   needs lives in U+0000-00FF, inside latin, so an ES visitor never fetches
+   latin-ext either.
+
+   SIL Open Font License 1.1 — the licence ships beside the files in
+   assets/fonts/OFL.txt, as the OFL requires.
+   Copyright 2020 The Plus Jakarta Sans Project Authors. */
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url('/assets/fonts/plus-jakarta-sans-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url('/assets/fonts/plus-jakarta-sans-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF,
+    U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+    U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
 :root {
-  --bg-top: #4a9ec8;
-  --bg-bottom: #3681ab;
+  --bg-top: #306d8c;
+  --bg-bottom: #275973;
 
   --text-main: #ffffff;
-  --text-muted: rgba(255, 255, 255, 0.78);
+  --text-muted: rgba(255, 255, 255, 0.86);
   --text-faint: rgba(255, 255, 255, 0.55);
 
   --pill-bg: rgba(0, 0, 0, 0.18);
