@@ -1,0 +1,23 @@
+name: Audit
+
+# Two sessions edit this repo. This catches the seams between them without
+# anyone having to remember to look.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run the consistency checks
+        run: ./scripts/audit.sh
