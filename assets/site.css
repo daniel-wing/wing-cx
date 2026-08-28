@@ -160,12 +160,6 @@ a { color: inherit; }
   color: #1e293b;
 }
 
-.nav-item svg {
-  width: 14px;
-  height: 14px;
-  fill: currentColor;
-}
-
 .nav-actions {
   display: flex;
   align-items: center;
@@ -376,9 +370,9 @@ a { color: inherit; }
   .panel { padding: 1.15rem; }
 }
 
-/* Below this width the three header groups no longer fit side by side.
-   Navigation and the language switch keep their labels; the two links that
-   also exist elsewhere on the page shrink to their icons. */
+/* Below this width the header tightens up rather than dropping anything.
+   Contact moved to the hero and footers, so only brand, navigation and the
+   language switch are up here and all three keep their labels. */
 @media (max-width: 620px) {
   /* Only three things left up here - brand, nav, language - so one row is
      comfortable even with the longer Spanish labels. */
@@ -387,8 +381,6 @@ a { color: inherit; }
 
   .nav-pill-center { padding: 3px 4px; gap: 2px; }
   .nav-item { padding: 0.4rem 0.85rem; font-size: 0.8rem; }
-  .nav-item > span { display: none; }
-  .nav-item svg { width: 16px; height: 16px; }
 
   .lang-opt { padding: 0.3rem 0.55rem; font-size: 0.72rem; }
 }

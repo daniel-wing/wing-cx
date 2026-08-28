@@ -1,5 +1,5 @@
-/* Shared shell behaviour: the pinned header, and language switching.
-   Loaded by every page. No build step, no framework. */
+/* Language switching for every page. The pinned header is pure CSS in
+   site.css and needs no script. No build step, no framework. */
 
 (function () {
   'use strict';
@@ -49,6 +49,15 @@
     for (const node of document.querySelectorAll('[data-i18n-title]')) {
       const value = lookup(lang, node.dataset.i18nTitle);
       if (value !== null) node.setAttribute('title', value);
+    }
+
+    // Set the tab title explicitly rather than relying on the <title> element's
+    // textContent alone. apply() runs on first load too, so the tab is correct
+    // before the visitor ever touches the toggle.
+    const titleKey = document.querySelector('title[data-i18n]')?.dataset.i18n;
+    if (titleKey) {
+      const titleValue = lookup(lang, titleKey);
+      if (titleValue !== null) document.title = titleValue;
     }
 
     for (const button of document.querySelectorAll('.lang-opt')) {

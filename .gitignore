@@ -18,3 +18,7 @@
 
 # Vercel
 .vercel
+
+# Project logs and infrastructure notes. Kept on disk, never committed:
+# Vercel serves the repo root, so anything tracked here becomes a public URL.
+docs/

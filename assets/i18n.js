@@ -166,12 +166,6 @@ window.WING_STRINGS = {
     'ships.h1': 'Proyectos.',
     'ships.lede': 'Cosas que he construido y he puesto a disposición de todos. Gratis, sin registro y sin cuenta: abre la página y úsala.',
 
-    /* ---- signals index ---- */
-    'signals.title': 'Señales — wing.cx',
-    'signals.h1': 'Señales.',
-    'signals.lede': 'Historias con datos: lo que resultó que decían los números cuando alguien se puso a mirarlos de verdad. Gráficos, análisis y algún que otro hallazgo incómodo.',
-    'signals.more': 'La primera, en camino',
-    'signals.crumb': 'Señales',
     'ships.status.live': 'En línea',
     'ships.scribe.name': 'Scribe',
     'ships.scribe.desc': 'Suelta un archivo de vídeo o audio y obtén una transcripción limpia junto con los subtítulos. Whisper se ejecuta dentro de tu propio navegador, así que el archivo nunca sale de tu equipo y no hay nada que pagar.',
@@ -184,6 +178,13 @@ window.WING_STRINGS = {
     'ships.2048.desc': 'El clásico puzzle numérico, sin anuncios. Lo hice porque me gusta 2048 y odio los anuncios. Recreación no oficial del original con licencia MIT de Gabriele Cirulli.',
     'ships.2048.tag1': 'Juegos',
     'ships.2048.tag3': 'Sin anuncios',
+
+    /* ---- signals index ---- */
+    'signals.title': 'Señales — wing.cx',
+    'signals.h1': 'Señales.',
+    'signals.lede': 'Historias con datos: lo que resultó que decían los números cuando alguien se puso a mirarlos de verdad. Gráficos, análisis y algún que otro hallazgo incómodo.',
+    'signals.more': 'La primera, en camino',
+    'signals.crumb': 'Señales',
 
     /* ---- scribe: header ---- */
     'scribe.title': 'Scribe — wing.cx',
